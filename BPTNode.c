@@ -1,20 +1,4 @@
-#include<stdlib.h>
-#include<stdio.h>
-#include<string.h>
-#include<time.h>
-
-#define NODESIZE 5
-
-// DATA TYPES
-union kp {
-  int k;
-  struct BPTNode* p;
-};
-
-typedef struct BPTNode {
-  int nItems; // TODO
-  union kp* arr;
-} BPTNode;
+#include "BPTNode.h"
 
 // BASIC UTILITY FUNCTIONS
 // initializer
@@ -25,7 +9,7 @@ BPTNode* initBPTNode() {
     return NULL;
   }
   BPTNode* ret = malloc(sizeof(BPTNode));
-  ret->arr = malloc(NODESIZE * sizeof(union kp));
+  ret->arr = malloc(NODESIZE * sizeof(kp));
   for (int i = 0; i < NODESIZE; i += 2) {
     ret->arr[i].p = NULL;
   }
