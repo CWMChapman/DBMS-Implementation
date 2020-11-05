@@ -61,8 +61,11 @@ void benchmark() {
 
 // TESTING CODE
 int main(int argc, char** argv) {
+  initPageManager();
+  /*
   benchmark();
   return 0;
+  */
   // test root node
   BPTNode* test = initBPTNode();
   printBPTNode(test);
@@ -71,5 +74,10 @@ int main(int argc, char** argv) {
   test2->arr[1].k = 5;
   test->arr[0].p = test2;
   printBPTNode(test);
+
+  printf("%i\n", pm->reads);
+  page* testPage = malloc(sizeof(page));
+  getPage(testPage);
+  printf("%i\n", pm->reads);
   return 0;
 }

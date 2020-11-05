@@ -1,6 +1,8 @@
 #include "pageManager.h"
 
-static pageManager* pm;
+pageManager* pm = NULL;
+
+//static pageManager* pm;
 
 void initPageManager() {
   pm = malloc(sizeof(pageManager));

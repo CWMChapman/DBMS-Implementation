@@ -51,3 +51,8 @@ void initPageManager();
 // the counters
 page* getPage(page* toGet);
 void putPage(page* toPut);
+
+
+
+extern pageManager* pm;
+//static pageManager* pm;
