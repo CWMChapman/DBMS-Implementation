@@ -10,22 +10,19 @@ void initPageManager() {
   pm->writes = 0;
 }
 
-page* getPage(page* toGet) {
+pageptr getPage(pageptr toGet) {
   pm->reads++;
   return toGet;
 }
 
-void putPage(page* toPut) {
+void putPage(pageptr toPut) {
   pm->writes++;
   return;
 }
 
-// what do hash table pages look like?
 
-/*
 int main() {
   initPageManager();
   printf("reads: %i, writes: %i\n", pm->reads, pm->writes);
   return 0;
 }
-*/
