@@ -15,14 +15,6 @@ manager and it is on you to call it!
 // = = = =
 // DATA TYPES, CONSTANTS
 // = = = =
-<<<<<<< HEAD
-// no. of records per page
-#define PAGESIZE_RECORDS 10
-// no. of bytes per page
-#define PAGESIZE_BYTES 16 + 64 * PAGESIZE_RECORDS
-
-// this is pretty arbitrary--set up to be 64 bytes
-=======
 // bytes per page
 #define PAGESIZE 256
 
@@ -34,24 +26,12 @@ typedef union kp{
 } kp;
 
 // individual record. Arbitrarily set to 64 bytes.
->>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
 typedef struct {
   int id;
   char f1[30];
   char f2[30];
 } record;
 
-<<<<<<< HEAD
-// single page in the file of records
-typedef struct {
-  // note: for the linear hash, only the next pointer is needed. prev
-  // is there simply so we can reuse the page struct.
-  struct page* next;
-  struct page* prev;
-  record records[PAGESIZE_RECORDS];
-} page;
-
-=======
 // rid: points to a record page
 typedef struct {
   record* page;
@@ -94,7 +74,6 @@ typedef struct {
 } pageptr;
 
 // page manager: right now only tracks reads/writes.
->>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
 typedef struct {
   int reads;
   int writes;
@@ -108,12 +87,8 @@ void initPageManager();
 
 // function stubs to read and write from "disk"--in reality just update
 // the counters
-<<<<<<< HEAD
-page* getPage(page* toGet);
-void putPage(page* toPut);
-=======
 pageptr getPage(pageptr toGet);
 void putPage(pageptr toPut);
 
+// declare single global page manager to use
 extern pageManager* pm;
->>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
