@@ -15,18 +15,33 @@ manager and it is on you to call it!
 // = = = =
 // DATA TYPES, CONSTANTS
 // = = = =
+<<<<<<< HEAD
 // no. of records per page
 #define PAGESIZE_RECORDS 10
 // no. of bytes per page
 #define PAGESIZE_BYTES 16 + 64 * PAGESIZE_RECORDS
 
 // this is pretty arbitrary--set up to be 64 bytes
+=======
+// bytes per page
+#define PAGESIZE 256
+
+// "INNER" STRUCTS--THINGS IN PAGES
+// union for treePage to elegantly interlace keys and pointers
+typedef union kp{
+  int k;
+  struct treePage* p;
+} kp;
+
+// individual record. Arbitrarily set to 64 bytes.
+>>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
 typedef struct {
   int id;
   char f1[30];
   char f2[30];
 } record;
 
+<<<<<<< HEAD
 // single page in the file of records
 typedef struct {
   // note: for the linear hash, only the next pointer is needed. prev
@@ -36,6 +51,50 @@ typedef struct {
   record records[PAGESIZE_RECORDS];
 } page;
 
+=======
+// rid: points to a record page
+typedef struct {
+  record* page;
+  int slot;
+} rid;
+
+// PAGE STRUCTS
+// ridPage: one leaf page or hash bucket. stores rids.
+typedef struct {
+  struct ridPage* prev;
+  struct ridPage* next;
+  rid rids[(PAGESIZE - 2 * sizeof(struct ridPage*)) / sizeof(rid)];
+} ridPage;
+
+// treePage: one non-leaf node in the tree
+typedef struct {
+  int nItems;
+  union kp children[(PAGESIZE - sizeof(int)) / sizeof(union kp)];
+} treePage;
+
+// recordPage: one actual record
+typedef struct {
+  record records[PAGESIZE / sizeof(record)];
+} recordPage;
+
+typedef union {
+  ridPage* rid;
+  treePage* node;
+  recordPage* rec;
+} pageUnion;
+
+// struct to keep track of page pointers and their type
+// type codes:
+// 0 = ridPage
+// 1 = treePage
+// 2 = recordPage
+typedef struct {
+  int type;
+  pageUnion ptr;
+} pageptr;
+
+// page manager: right now only tracks reads/writes.
+>>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
 typedef struct {
   int reads;
   int writes;
@@ -49,5 +108,12 @@ void initPageManager();
 
 // function stubs to read and write from "disk"--in reality just update
 // the counters
+<<<<<<< HEAD
 page* getPage(page* toGet);
 void putPage(page* toPut);
+=======
+pageptr getPage(pageptr toGet);
+void putPage(pageptr toPut);
+
+extern pageManager* pm;
+>>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313

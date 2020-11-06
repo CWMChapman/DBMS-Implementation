@@ -1,20 +1,4 @@
-f#include<stdlib.h>
-#include<stdio.h>
-#include<string.h>
-#include<time.h>
-
-#define NODESIZE 5
-
-// DATA TYPES
-union kp {
-  int k;
-  struct BPTNode* p;
-};
-
-typedef struct BPTNode {
-  int nItems; // TODO
-  union kp* arr;
-} BPTNode;
+#include "BPTNode.h"
 
 // BASIC UTILITY FUNCTIONS
 // initializer
@@ -25,7 +9,7 @@ BPTNode* initBPTNode() {
     return NULL;
   }
   BPTNode* ret = malloc(sizeof(BPTNode));
-  ret->arr = malloc(NODESIZE * sizeof(union kp));
+  ret->arr = malloc(NODESIZE * sizeof(kp));
   for (int i = 0; i < NODESIZE; i += 2) {
     ret->arr[i].p = NULL;
   }
@@ -77,8 +61,11 @@ void benchmark() {
 
 // TESTING CODE
 int main(int argc, char** argv) {
+  initPageManager();
+  /*
   benchmark();
   return 0;
+  */
   // test root node
   BPTNode* test = initBPTNode();
   printBPTNode(test);
@@ -87,5 +74,10 @@ int main(int argc, char** argv) {
   test2->arr[1].k = 5;
   test->arr[0].p = test2;
   printBPTNode(test);
+
+  printf("%i\n", pm->reads);
+  page* testPage = malloc(sizeof(page));
+  getPage(testPage);
+  printf("%i\n", pm->reads);
   return 0;
 }
