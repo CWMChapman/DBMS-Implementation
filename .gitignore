@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-# DS_Store
-=======
-# DS Store
->>>>>>> ddbd2951b3d00776bdea4b6ba73f8d1433c88313
+# Misc junk
 .DS_Store
+*#
 
 # Prerequisites
 *.d
@@ -42,6 +39,7 @@
 *.i*86
 *.x86_64
 *.hex
+*.e
 
 # Debug files
 *.dSYM/
