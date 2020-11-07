@@ -15,8 +15,8 @@ manager and it is on you to call it!
 // = = = =
 // DATA TYPES, CONSTANTS
 // = = = =
-// bytes per page
-#define PAGESIZE 256
+// bytes per page--MUST BE MULTIPLE OF 8
+#define PAGESIZE 128
 
 // "INNER" STRUCTS--THINGS IN PAGES
 // union for treePage to elegantly interlace keys and pointers
