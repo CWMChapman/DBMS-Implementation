@@ -1,8 +1,17 @@
-#include<linearHash.h>
+#include "linearHash.h"
 
+
+
+
+
+// void insert
+
+
+// Code to test the hash_table functions
 int main(int argc, char** argv) {
-    pm.initPageManager()
+    initPageManager();
 
+    printf("hello");
 
 
 
