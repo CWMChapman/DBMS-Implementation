@@ -16,7 +16,8 @@ manager and it is on you to call it!
 // DATA TYPES, CONSTANTS
 // = = = =
 // bytes per page--MUST BE MULTIPLE OF 8
-#define PAGESIZE 128
+#define PAGESIZE 264
+#define TSIZE (PAGESIZE - sizeof(int)) / sizeof(union kp)
 
 // "INNER" STRUCTS--THINGS IN PAGES
 // union for treePage to elegantly interlace keys and pointers
@@ -34,7 +35,8 @@ typedef struct {
 
 // rid: points to a record page
 typedef struct {
-  record* page;
+  int id;
+  struct recordPage* page;
   int slot;
 } rid;
 
@@ -47,14 +49,15 @@ typedef struct {
 } ridPage;
 
 // treePage: one non-leaf node in the tree
-typedef struct {
+typedef struct treePage {
   int nItems;
   union kp children[(PAGESIZE - sizeof(int)) / sizeof(union kp)];
 } treePage;
 
 // recordPage: one actual record
-typedef struct {
-  record records[PAGESIZE / sizeof(record)];
+typedef struct recordPage {
+  int nItems;
+  record records[(PAGESIZE - sizeof(int)) / sizeof(record)];
 } recordPage;
 
 typedef union {
@@ -77,6 +80,7 @@ typedef struct {
 typedef struct {
   int reads;
   int writes;
+  recordPage* curRecordPage;
 } pageManager;
 
 // = = = =
@@ -89,5 +93,22 @@ void initPageManager();
 // the counters
 pageptr getPage(pageptr toGet);
 void putPage(pageptr toPut);
+
+// utilities to make a pageptr
+pageptr genTreePageptr(treePage* ptr);
+pageptr genRidPageptr(ridPage* rid);
+
+// make a record page
+recordPage* initRecordPage();
+
+// add a record
+rid addRecord(record toAdd);
+
+// prints
+void printTreeNode(pageptr n);
+//void printRecordPage(pageptr n);
+void printRecordPage(recordPage* tp);
+
+//void test(recordPage* tp);
 
 extern pageManager* pm;
