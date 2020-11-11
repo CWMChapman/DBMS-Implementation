@@ -16,7 +16,7 @@ manager and it is on you to call it!
 // DATA TYPES, CONSTANTS
 // = = = =
 // bytes per page--MUST BE MULTIPLE OF 8
-#define PAGESIZE 128
+#define PAGESIZE 264
 #define TSIZE (PAGESIZE - sizeof(int)) / sizeof(union kp)
 
 // "INNER" STRUCTS--THINGS IN PAGES
@@ -35,7 +35,8 @@ typedef struct {
 
 // rid: points to a record page
 typedef struct {
-  record* page;
+  int id;
+  struct recordPage* page;
   int slot;
 } rid;
 
@@ -54,7 +55,7 @@ typedef struct treePage {
 } treePage;
 
 // recordPage: one actual record
-typedef struct {
+typedef struct recordPage {
   int nItems;
   record records[(PAGESIZE - sizeof(int)) / sizeof(record)];
 } recordPage;
@@ -99,5 +100,15 @@ pageptr genRidPageptr(ridPage* rid);
 
 // make a record page
 recordPage* initRecordPage();
+
+// add a record
+rid addRecord(record toAdd);
+
+// prints
+void printTreeNode(pageptr n);
+//void printRecordPage(pageptr n);
+void printRecordPage(recordPage* tp);
+
+//void test(recordPage* tp);
 
 extern pageManager* pm;
