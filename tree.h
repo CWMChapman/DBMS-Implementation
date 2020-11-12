@@ -3,7 +3,6 @@
 
 #include "pageManager.h"
 
-pageptr initTreeNode();
 pageptr initTree();
 void printTreeNode(pageptr n);
-void addRecord(record toAdd);
+void treeInsert(pageptr tree, record toAdd);

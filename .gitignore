@@ -1,5 +1,6 @@
-# DS Store
+# Misc junk
 .DS_Store
+*#
 
 # Prerequisites
 *.d
@@ -38,6 +39,7 @@
 *.i*86
 *.x86_64
 *.hex
+*.e
 
 # Debug files
 *.dSYM/
