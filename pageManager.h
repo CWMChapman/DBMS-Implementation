@@ -16,14 +16,32 @@ manager and it is on you to call it!
 // DATA TYPES, CONSTANTS
 // = = = =
 // bytes per page--MUST BE MULTIPLE OF 8
-#define PAGESIZE 264
+#define PAGESIZE 280
 #define TSIZE (PAGESIZE - sizeof(int)) / sizeof(union kp)
+#define RSIZE (PAGESIZE - 2 * sizeof(struct ridPage*) - sizeof(int)) / sizeof(rid)
 
 // "INNER" STRUCTS--THINGS IN PAGES
+typedef union {
+  struct ridPage* rid;
+  struct treePage* node;
+  struct recordPage* rec;
+} pageUnion;
+
+
+// struct to keep track of page pointers and their type
+// type codes:
+// 0 = ridPage
+// 1 = treePage
+// 2 = recordPage
+typedef struct {
+  int type;
+  pageUnion ptr;
+} pageptr;
+
 // union for treePage to elegantly interlace keys and pointers
 typedef union kp{
   int k;
-  struct treePage* p;
+  pageptr p;
 } kp;
 
 // individual record. Arbitrarily set to 64 bytes.
@@ -42,10 +60,13 @@ typedef struct {
 
 // PAGE STRUCTS
 // ridPage: one leaf page or hash bucket. stores rids.
-typedef struct {
-  struct ridPage* prev;
-  struct ridPage* next;
-  rid rids[(PAGESIZE - 2 * sizeof(struct ridPage*)) / sizeof(rid)];
+typedef struct ridPage {
+  //struct ridPage* prev;
+  //struct ridPage* next;
+  pageptr prev;
+  pageptr next;
+  int nItems;
+  rid rids[(PAGESIZE - 2 * sizeof(pageptr) - sizeof(int)) / sizeof(rid)];
 } ridPage;
 
 // treePage: one non-leaf node in the tree
@@ -59,22 +80,6 @@ typedef struct recordPage {
   int nItems;
   record records[(PAGESIZE - sizeof(int)) / sizeof(record)];
 } recordPage;
-
-typedef union {
-  ridPage* rid;
-  treePage* node;
-  recordPage* rec;
-} pageUnion;
-
-// struct to keep track of page pointers and their type
-// type codes:
-// 0 = ridPage
-// 1 = treePage
-// 2 = recordPage
-typedef struct {
-  int type;
-  pageUnion ptr;
-} pageptr;
 
 // page manager: right now only tracks reads/writes.
 typedef struct {
@@ -97,18 +102,18 @@ void putPage(pageptr toPut);
 // utilities to make a pageptr
 pageptr genTreePageptr(treePage* ptr);
 pageptr genRidPageptr(ridPage* rid);
+pageptr genRecordPageptr(recordPage* rec);
 
 // make a record page
 recordPage* initRecordPage();
+ridPage* initRidPage();
 
 // add a record
 rid addRecord(record toAdd);
 
 // prints
-void printTreeNode(pageptr n);
-//void printRecordPage(pageptr n);
-void printRecordPage(recordPage* tp);
-
-//void test(recordPage* tp);
+void printRidPage(pageptr n);
+void printTreePage(pageptr n);
+void printRecordPage(pageptr n);
 
 extern pageManager* pm;
