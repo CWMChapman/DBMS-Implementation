@@ -74,14 +74,15 @@ void printRidPage(pageptr n) {
     printf("ERROR: wrong page type (expected 0, got %i)\n", n.type);
   }
   ridPage* tp = n.ptr.rid;
-  printf("========\nRID PAGE\nnItems: %i\n", tp->nItems);
+  printf("=====================================\nRID PAGE\naddress: %p\nnItems: %i\n",
+         tp, tp->nItems);
   for (int i = 0; i < tp->nItems; ++i) {
-    printf("%i | %p | %i\n",
+    printf("%i \t| %p \t| %i\n",
            tp->rids[i].id,
            tp->rids[i].page,
            tp->rids[i].slot);
   }
-  printf("========\n\n");
+  printf("=====================================\n\n");
   return;
 }
 
@@ -90,15 +91,14 @@ void printTreePage(pageptr n) {
     printf("ERROR: wrong page type (expected 1, got %i)\n", n.type);
   }
   treePage* tp = n.ptr.node;
-  printf("========\nTREE PAGE\n");
-  printf("nItems: %i\n| ", tp->nItems);
+  printf("=====================================\nTREE PAGE\n");
+  printf("address: %p\nnItems: %i\n| ", tp, tp->nItems);
   for (int i = 0; i < tp->nItems; ++i) {
     if (i % 2) printf("K: %i ", tp->children[i].k);
-    else printf("P: %i ",
-                tp->children[i].p.ptr.node == NULL ? 0 : tp->children[i].p.ptr.node->children[1].k);
+    else printf("P: %p ", tp->children[i].p.ptr.node);
     printf("| ");
   }
-  printf("\n========\n\n");
+  printf("\n=====================================\n\n");
   return;
 }
 
@@ -107,13 +107,13 @@ void printRecordPage(pageptr n) {
     printf("ERROR: wrong page type (expected 2, got %i)\n", n.type);
   }
   recordPage* tp = n.ptr.rec;
-  printf("========\nRECORD PAGE\nnItems: %i\n", tp->nItems);
+  printf("=====================================\nRECORD PAGE\naddress: %p\nnItems: %i\n", tp, tp->nItems);
   for (int i = 0; i < tp->nItems; ++i) {
-    printf("%i | %s | %s\n",
+    printf("%i \t| %s \t| %s\n",
            tp->records[i].id,
            tp->records[i].f1,
            tp->records[i].f2);
   }
-  printf("========\n\n");
+  printf("=====================================\n\n");
   return;
 }

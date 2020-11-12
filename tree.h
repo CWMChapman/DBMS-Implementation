@@ -4,5 +4,5 @@
 #include "pageManager.h"
 
 pageptr initTree();
-void printTreeNode(pageptr n);
-void treeInsert(pageptr tree, record toAdd);
+void printTreePage(pageptr n);
+void treeInsert(pageptr* tree, record toAdd);

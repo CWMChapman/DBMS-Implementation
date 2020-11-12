@@ -39,10 +39,16 @@ typedef struct {
 } pageptr;
 
 // union for treePage to elegantly interlace keys and pointers
-typedef union kp{
+typedef union kp {
   int k;
   pageptr p;
 } kp;
+
+// struct for passing values up a treeInsert
+typedef struct passUp {
+  int key;
+  pageptr ptr;
+} passUp;
 
 // individual record. Arbitrarily set to 64 bytes.
 typedef struct {
@@ -104,7 +110,7 @@ pageptr genTreePageptr(treePage* ptr);
 pageptr genRidPageptr(ridPage* rid);
 pageptr genRecordPageptr(recordPage* rec);
 
-// make a record page
+// make a page
 recordPage* initRecordPage();
 ridPage* initRidPage();
 
