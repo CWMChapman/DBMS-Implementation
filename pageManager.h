@@ -17,7 +17,8 @@ manager and it is on you to call it!
 // = = = =
 // bytes per page--MUST BE MULTIPLE OF 8
 #define PAGESIZE 280
-#define TSIZE (PAGESIZE - sizeof(int)) / sizeof(union kp)
+#define TSIZE ((PAGESIZE - sizeof(int)) / sizeof(union kp) -            \
+               ((PAGESIZE - sizeof(int)) / sizeof(union kp) + 1) % 2)
 #define RSIZE (PAGESIZE - 2 * sizeof(struct ridPage*) - sizeof(int)) / sizeof(rid)
 
 // "INNER" STRUCTS--THINGS IN PAGES
@@ -121,5 +122,7 @@ rid addRecord(record toAdd);
 void printRidPage(pageptr n);
 void printTreePage(pageptr n);
 void printRecordPage(pageptr n);
+
+void printSizes();
 
 extern pageManager* pm;

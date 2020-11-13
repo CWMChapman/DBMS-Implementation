@@ -22,17 +22,18 @@ pageptr initTree() {
 void insert(pageptr n, record toAdd, passUp* newChild) {
   // n tree node (i.e. non-leaf)
   if (n.type == 1) { 
-    // search for appropriate location
+    // find appropriate location, insert into it
     // TODO: binary search instead of linear
     treePage* t = n.ptr.node;
     pageptr next = t->children[0].p;
+    int idx = 0;
     for (int i = 1; i < t->nItems; i += 2) {
       if (t->children[i].k <= toAdd.id) {
         next = t->children[i+1].p;
+        idx = i;
       }
     }
-
-    // insert into appropriate location
+    // printf("id: %i, idx: %i\n", toAdd.id, idx);
     next = getPage(next);
     insert(next, toAdd, newChild);
 
@@ -42,14 +43,16 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       pageptr newPtr = newChild->ptr;
 
        // full--need to split first
-      if (t->nItems == TSIZE) {
+      if (t->nItems >= TSIZE) {
         treePage* newPage = malloc(sizeof(treePage));
-        int median = TSIZE / 2;
+        int median = TSIZE / 2 - ((TSIZE / 2 + 1) % 2);
         t->nItems = median;
         newPage->nItems = median;
+        
         memmove(&(newPage->children[0]), &(t->children[median+1]), median * sizeof(kp));
-        newChild->key = t->children[median].k;
-        newChild->ptr = genTreePageptr(newPage);
+        *newChild = (passUp) { t->children[median].k, genTreePageptr(newPage) };
+        
+        if (toAdd.id >= t->children[median].k) t = newPage;
       }
       // not full--newChild should be back to null
       else newChild->key = -1;
@@ -100,8 +103,6 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     // insert into node
     // TODO: binary search instead of linear
     int idx = r->nItems;
-    
-    // find location in leaf node
     for (int i = r->nItems - 1; i >=0; --i) {
       if (r->rids[i].id > toAdd.id) idx = i;
     }
@@ -110,8 +111,6 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     memmove(&(r->rids[idx+1]), &(r->rids[idx]), sizeof(rid) * (r->nItems - idx));
     r->rids[idx] = addRecord(toAdd);
     (r->nItems)++;
-    
-    // printRidPage(genRidPageptr(r));
   }
   return;
 }
@@ -133,10 +132,8 @@ void treeInsert(pageptr* tree, record toAdd) {
   passUp* toPass = malloc(sizeof(passUp));
   toPass->key = -1; // ASSUME NO NEGATIVE KEYS
   insert(*tree, toAdd, toPass);
-  // handle splitting root
+  // handle splitting root--make new root, add pointers to split old root
   if (toPass->key != -1) {
-    printf("OLD ROOT:\n");
-    printTreePage(*tree);
     pageptr newRoot = initTreeNode();
     // put the old root on the left
     newRoot.ptr.node->children[0].p = genTreePageptr(tree->ptr.node);
@@ -161,6 +158,7 @@ record* genRandomRecords(int nRecords) {
     ret[i] = r;
   }
   // shuffle array--swap each spot with a different one
+  /*
   record tmp;
   int randInt;
   srand(time(NULL));
@@ -170,40 +168,51 @@ record* genRandomRecords(int nRecords) {
     ret[i] = ret[randInt];
     ret[randInt] = tmp;
   }
+  */
   return ret;
+}
+
+void printTree(pageptr root) {
+  while (root.type != 0) root = root.ptr.node->children[0].p;
+  while (root.ptr.rid->next.ptr.rid != NULL) {
+    printRidPage(root);
+    root = root.ptr.rid->next;
+  }
 }
 
 // TESTING CODE
 int main(int argc, char** argv) {
   initPageManager();
 
-  pageptr root = initTreeNode();
+  printf("%lu\n", RSIZE);
 
-  /*
-  record r0 = { 5, "Gregory", "Alice" };
-  record r1 = { 7, "Grigori", "Alicia" };
-  record r2 = { 3, "Grogoro", "Alamo" };
-  record r3 = { 9, "Gruggug", "Albania" };
-  record r4 = { 6, "Google", "Amazon" };
-
-  treeInsert(root, r0);
-  treeInsert(root, r1);
-  treeInsert(root, r2);
-  treeInsert(root, r3);
-  treeInsert(root, r4);
-  */
-
-  printf("tsize: %lu\n", TSIZE);
-
+  pageptr* root = malloc(sizeof(pageptr));
+  *root = initTreeNode();
   
-  int nRecords = 30;
+  int nRecords = 150;
   record* randRecords = genRandomRecords(nRecords);
-  for (int i = 0; i < nRecords; ++i) {
+  for (int i = 0; i < nRecords; i += 2) {
     record r = randRecords[i];
-    treeInsert(&root, r);
+    // printf("inserting %i\n", r.id);
+    treeInsert(root, r);
   }
 
-  printTreePage(root);
+  // printf("TREE:\n");
+  // printTree(*root);
+  // STOPS AT 128--WHY???
+  
+  for (int i = 1; i < nRecords; i += 2) {
+    record r = randRecords[i];
+    // printf("inserting %i\n", r.id);
+    treeInsert(root, r);
+  }
+
+  // printf("TREE:\n");
+  // printTree(*root);
+
+  // TODO: WHY DOES ROOT NOT CHANGE? SHOULD WRITE SEARCH TO CHECK
+
+  printSizes();
   
   return 0;
 }

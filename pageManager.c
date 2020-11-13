@@ -92,13 +92,13 @@ void printTreePage(pageptr n) {
   }
   treePage* tp = n.ptr.node;
   printf("=====================================\nTREE PAGE\n");
-  printf("address: %p\nnItems: %i\n| ", tp, tp->nItems);
+  printf("address: %p\nnItems: %i\n", tp, tp->nItems);
   for (int i = 0; i < tp->nItems; ++i) {
     if (i % 2) printf("K: %i ", tp->children[i].k);
     else printf("P: %p ", tp->children[i].p.ptr.node);
-    printf("| ");
+    printf("\n");
   }
-  printf("\n=====================================\n\n");
+  printf("=====================================\n\n");
   return;
 }
 
@@ -115,5 +115,17 @@ void printRecordPage(pageptr n) {
            tp->records[i].f2);
   }
   printf("=====================================\n\n");
+  return;
+}
+
+void printSizes() {
+  printf("======================\n");
+  printf("DEFINED SIZES\npagesize \t%i\ntsize \t\t%lu\nrsize \t\t%lu\n\n",
+         PAGESIZE, TSIZE, RSIZE);
+  printf("PAGE SIZES\nridPage \t%lu\ntreePage \t%lu\nrecordPage \t%lu\n\n",
+         sizeof(ridPage), sizeof(treePage), sizeof(recordPage));
+  printf("INTERNAL STRUCT SIZES\npageptr \t%lu\nkp \t\t%lu\nrecord \t\t%lu\nrid \t\t%lu\n",
+         sizeof(pageptr), sizeof(kp), sizeof(record), sizeof(rid));
+  printf("======================\n");
   return;
 }
