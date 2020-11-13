@@ -14,13 +14,11 @@ typedef struct {
     ridPage buckets[INITIAL_NUM_BUCKETS]; // the actual table
 } hashTable;
 
-// typedef struct { // DOESNT WORK
-//     int size;
-//     int binArray[];
-// } binArray;
-
 hashTable* initHashTable();
-// binArray initBinArray(int level);
+
+int hash(int level, int key);
+void insert(hashTable* ht, record toAdd);
+record lookup(hashTable* ht, int key);
 
 /*
 Christopher Chapman

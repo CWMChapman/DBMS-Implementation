@@ -1,26 +1,14 @@
 #include "linearHash.h"
 
-
-
 /*
-
 FUNCTIONS:
 
     See rough algorithm in the textbook on page 381
 
-    hash (returns bucket to insert into)
-    insert (returns record)
-    increment_next (void)
-    delete (void)
-    search (look_up) (returns record)
-    split
-
-
-
-
-
-    So im gonna need the index, which consists of ridPages
-
+    hash
+    insert
+    lookUp
+    delete
 */
 
 int hash(int level, int key) {
@@ -30,7 +18,6 @@ int hash(int level, int key) {
         key &= ~(1UL << i); // this sets each of the bits we dont care about at this level to zero, so we can return an int that will represent the index into the array of buckets!
     }
     printf("after key: %i\n", key);
-    // buf[buf_index] |= message[i] << (7-bit_index);
 
     return key;
 }
@@ -38,14 +25,22 @@ int hash(int level, int key) {
 void insert(hashTable* ht, record toAdd) {
     int key = toAdd.id;
     // int* hash_array = hash(key);
-    int index = hash(ht->level, key);
-    int ridPageIndex = ht->buckets[index].nItems;
+    int bucketIndex = hash(ht->level, key);
+    int ridPageIndex = ht->buckets[bucketIndex].nItems;
     
-    ht->buckets[index].rids[ridPageIndex] = addRecord(toAdd);
+    ht->buckets[bucketIndex].rids[ridPageIndex] = addRecord(toAdd);
 
     return;
 }
 
+// record lookup(hashTable* ht, int key) {
+//     int bucketIndex = hash(ht->level, key);
+
+//     for (int i = 0; i < ht->buckets[bucketIndex].nItems; ++i) {
+//         if (ht->buckets[bucketIndex].rids[i].) // i need to look through the records from the record ids to search for the key and tehn return the whole record.
+//     }
+
+// }
 
 hashTable* initHashTable() {
     hashTable* ht = malloc(sizeof(hashTable)); // why do i have to do this instead of hashTable* ht;
@@ -71,6 +66,7 @@ int main(int argc, char** argv) {
     hashTable* ht = initHashTable();
     record r0 = {5, "zero", "zero"};
     insert(ht, r0);
+
 
     return 0;
 }
