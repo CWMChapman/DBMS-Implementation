@@ -27,8 +27,10 @@ void insert(hashTable* ht, record toAdd) {
     // int* hash_array = hash(key);
     int bucketIndex = hash(ht->level, key);
     int ridPageIndex = ht->buckets[bucketIndex].nItems;
-    
-    ht->buckets[bucketIndex].rids[ridPageIndex] = addRecord(toAdd);
+    rid recordID = addRecord(toAdd);
+    ht->buckets[bucketIndex].rids[ridPageIndex] = recordID;
+    ht->buckets[bucketIndex].nItems++;
+    putPage(genRecordPageptr(recordID.page));
 
     return;
 }
