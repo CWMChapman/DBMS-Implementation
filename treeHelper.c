@@ -63,7 +63,7 @@ record* genRandomRecords(int nRecords) {
     ret[i] = r;
   }
   // shuffle array--swap each spot with a different one
-  /*
+  
   record tmp;
   int randInt;
   srand(time(NULL));
@@ -73,6 +73,6 @@ record* genRandomRecords(int nRecords) {
     ret[i] = ret[randInt];
     ret[randInt] = tmp;
   }
-  */
+  
   return ret;
 }

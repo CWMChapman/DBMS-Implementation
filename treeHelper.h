@@ -1,5 +1,6 @@
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 #include "pageManager.h"
 
 // tree info
