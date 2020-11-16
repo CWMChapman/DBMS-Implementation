@@ -1,7 +1,6 @@
-#include<string.h>
-#include<time.h>
+// #include<time.h>
 
-#include "pageManager.h"
+#include "treeHelper.h" // brings in pageManager, string.h
 
 pageptr initTree();
 void printTreePage(pageptr n);

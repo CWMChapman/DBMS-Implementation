@@ -76,6 +76,7 @@ void printRidPage(pageptr n) {
   ridPage* tp = n.ptr.rid;
   printf("=====================================\nRID PAGE\naddress: %p\nnItems: %i\n",
          tp, tp->nItems);
+  printf("prev: %p\nnext: %p\n", tp->prev.ptr.rid, tp->next.ptr.rid);
   for (int i = 0; i < tp->nItems; ++i) {
     printf("%i \t| %p \t| %i\n",
            tp->rids[i].id,
@@ -89,13 +90,14 @@ void printRidPage(pageptr n) {
 void printTreePage(pageptr n) {
   if (n.type != 1) {
     printf("ERROR: wrong page type (expected 1, got %i)\n", n.type);
+    return;
   }
   treePage* tp = n.ptr.node;
   printf("=====================================\nTREE PAGE\n");
   printf("address: %p\nnItems: %i\n", tp, tp->nItems);
   for (int i = 0; i < tp->nItems; ++i) {
     if (i % 2) printf("K: %i ", tp->children[i].k);
-    else printf("P: %p ", tp->children[i].p.ptr.node);
+    else printf("P: %p (%i)", tp->children[i].p.ptr.node, tp->children[i].p.type);
     printf("\n");
   }
   printf("=====================================\n\n");
