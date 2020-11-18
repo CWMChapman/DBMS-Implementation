@@ -17,12 +17,37 @@ int hash(int level, int key) {
     return key;
 }
 
-// void split(hashTable* ht) {
-//     // ht->next
+void split(hashTable* ht) {
+    ridPage bucketToBeSplit = ht->buckets[ht->next_index];
 
+    /* SO FAR -- PLAN
 
-//     return;
-// }
+    So far, this code works... it adds more buckets.
+    But the problem is, is that I need to re-insert all of the 
+    items in the bucket that im splitting.
+    My plan:
+    1. Copy the bucket (and its overflows) being split
+    2. Delete the bucket
+    3. replace the bucket with a new bucket (an empty one of course)
+    4. Loop through the copied bucket and reinsert all of the items
+       based on the new hash function
+
+    ht->buckets[ht->next_index] = *initRidPage();
+    ht->buckets[ht->next_index].next.type = -1;
+    */
+    
+    ht->num_buckets = ht->num_buckets * (1 << (ht->level+1));
+    ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
+    for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
+        
+    }
+    ht->next_index++;
+    return;
+}
+
+int getNumBucketsAtLevel(int level) {
+    return INITIAL_NUM_BUCKETS  * (1 << level); // N(level) = N(0) * 2 ^ level, level must be positive
+}
 
 
 void insert(hashTable* ht, record toAdd) {
@@ -87,16 +112,17 @@ hashTable* initHashTable() {
     hashTable* ht = malloc(sizeof(hashTable)); // why do i have to do this instead of hashTable* ht;
     ht->level = 0; // set hash level to 2 (that is, we are going to be looking at the 2 least significant bits in the binary represntation of the key -- see hashing scheme)
     ht->num_buckets = INITIAL_NUM_BUCKETS; // * pow(2,ht->level); <- when level zero its just 4
+    ht->buckets = malloc(sizeof(ridPage) * ht->num_buckets);
     for(int i = 0; i < ht->num_buckets; ++i) {
         ht->buckets[i] = *initRidPage();
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
     }
     pageUnion ptr;
     ptr.rid = &ht->buckets[0];
+    ht->next_index = 0;
     pageptr next; 
     next.type = 0;
     next.ptr = ptr;
-
     ht->next = next; // setting the next pointer (see linear hash scheme) to be the first bucket
 
     return ht;
@@ -120,6 +146,11 @@ int main(int argc, char** argv) {
     for (int i = 0; i < 100; i++) {
         record l = lookup(ht, i);
         printf("key: %d, value: %s\n", l.id, l.f1);
+    }
+
+    split(ht);
+    for (int i = 0; i < ht->num_buckets; ++i) {
+        printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
     }
 
     return 0;
