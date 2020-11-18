@@ -1,5 +1,5 @@
 #include "linearHash.h"
-
+#include <math.h>
 /*
 FUNCTIONS:
 
@@ -10,15 +10,19 @@ FUNCTIONS:
 */
 
 int hash(int level, int key) {
-    // printf("level: %i\n", level);
-    // printf("before key: %i\n", key);
+    level += 2;
     for (int i = 31; i >= level; --i) {
         key &= ~(1UL << i); // this sets each of the bits we dont care about at this level to zero, so we can return an int that will represent the index into the array of buckets!
     }
-    // printf("after key: %i\n", key);
-
     return key;
 }
+
+// void split(hashTable* ht) {
+//     // ht->next
+
+
+//     return;
+// }
 
 
 void insert(hashTable* ht, record toAdd) {
@@ -33,8 +37,11 @@ void insert(hashTable* ht, record toAdd) {
     }
 
     // Is the number of items == to the max size (capacity) of the bucket? if so, add overflow bucket
-    // Add an overflow bucket because we've reached the capacity of current bucket
+    //If you add an overflow bucket, call split so that it can split the bucket for the next pointer and increment the level
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
+
+        // split(ht);
+        // ht->level++;
         pageptr overflow_bucket = genRidPageptr(initRidPage());
         bucket->next = overflow_bucket;
         bucket = bucket->next.ptr.rid;
@@ -78,8 +85,8 @@ record lookup(hashTable* ht, int key) {
 
 hashTable* initHashTable() {
     hashTable* ht = malloc(sizeof(hashTable)); // why do i have to do this instead of hashTable* ht;
-    ht->level = 2; // set hash level to 2 (that is, we are going to be looking at the 2 least significant bits in the binary represntation of the key -- see hashing scheme)
-    ht->num_buckets = INITIAL_NUM_BUCKETS;
+    ht->level = 0; // set hash level to 2 (that is, we are going to be looking at the 2 least significant bits in the binary represntation of the key -- see hashing scheme)
+    ht->num_buckets = INITIAL_NUM_BUCKETS; // * pow(2,ht->level); <- when level zero its just 4
     for(int i = 0; i < ht->num_buckets; ++i) {
         ht->buckets[i] = *initRidPage();
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
