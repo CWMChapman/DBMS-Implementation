@@ -7,6 +7,21 @@ FUNCTIONS:
     
     split
     delete
+
+    Currently...
+
+    Split works, it doubles the buckets, and reinserts all the elements in the bucket 
+    being split. 
+
+    The problem currently is that insert just inserts the elements back into the first bucket
+    which is what happened before we split, because it doesnt recognize that the level has changed.
+
+
+
+
+
+
+
 */
 
 int hash(int level, int key) {
@@ -19,29 +34,30 @@ int hash(int level, int key) {
 
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
-
-    /* SO FAR -- PLAN
-
-    So far, this code works... it adds more buckets.
-    But the problem is, is that I need to re-insert all of the 
-    items in the bucket that im splitting.
-    My plan:
-    1. Copy the bucket (and its overflows) being split
-    2. Delete the bucket
-    3. replace the bucket with a new bucket (an empty one of course)
-    4. Loop through the copied bucket and reinsert all of the items
-       based on the new hash function
-
+    // free(&ht->buckets[ht->next_index]); // CHECK THIS FOR MEMORY LEAK!!!!!!!!!!
     ht->buckets[ht->next_index] = *initRidPage();
-    ht->buckets[ht->next_index].next.type = -1;
-    */
+    ht->buckets[ht->next_index].next.type = -1; 
+
+    printf("bucketToBeSplit: %d\n", bucketToBeSplit.nItems);
     
     ht->num_buckets = ht->num_buckets * (1 << (ht->level+1));
     ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
+    while (bucketToBeSplit.next.type != -1) {
+        for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
+            // I need to look through the records from the record ids to search for the key and then return the whole record.
+            rid recordID = bucketToBeSplit.rids[i];
+            record r = recordID.page->records[recordID.slot];
+            insert(ht, r);
+        }
+        bucketToBeSplit = *bucketToBeSplit.next.ptr.rid;
+    }
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
-        
+        rid recordID = bucketToBeSplit.rids[i];
+        record r = recordID.page->records[recordID.slot];
+        insert(ht, r);
     }
     ht->next_index++;
+    ht->level++;
     return;
 }
 
