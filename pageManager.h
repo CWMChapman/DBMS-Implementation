@@ -19,6 +19,7 @@ manager and it is on you to call it!
 #define PAGESIZE 280
 #define TSIZE (PAGESIZE - sizeof(int)) / sizeof(union kp)
 #define RSIZE (PAGESIZE - 2 * sizeof(struct ridPage*) - sizeof(int)) / sizeof(rid)
+#define RPP ((PAGESIZE - (2 * sizeof(int))) / sizeof(record))
 
 // "INNER" STRUCTS--THINGS IN PAGES
 typedef union {
@@ -78,7 +79,8 @@ typedef struct treePage {
 // recordPage: one actual record
 typedef struct recordPage {
   int nItems;
-  record records[(PAGESIZE - sizeof(int)) / sizeof(record)];
+  int emptySlots;
+  record records[RPP];
 } recordPage;
 
 // page manager: right now only tracks reads/writes.
@@ -110,6 +112,7 @@ ridPage* initRidPage();
 
 // add a record
 rid addRecord(record toAdd);
+void remRecord(rid toRem);
 
 // prints
 void printRidPage(pageptr n);

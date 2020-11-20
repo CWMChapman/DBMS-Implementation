@@ -33,6 +33,13 @@ rid addRecord(record toAdd) {
   return ret;
 }
 
+void remRecord(rid toRem) {
+  if (++(toRem.page->emptySlots) == RPP) {
+    free(toRem.page);
+  }
+  return;
+}
+
 pageptr genTreePageptr(treePage* ptr) {
   pageUnion retUnion;
   retUnion.node = ptr;
