@@ -146,6 +146,6 @@ void printSizes() {
 }
 
 void printPageStats() {
-  printf("READS: %i\nWRITES: %i\n");
+  printf("READS: %i\nWRITES: %i\n", pm->reads, pm->writes);
   return;
 }

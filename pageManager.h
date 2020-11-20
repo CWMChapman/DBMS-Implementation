@@ -119,6 +119,7 @@ ridPage* initRidPage();
 
 // add a record
 rid addRecord(record toAdd);
+void remRecord(rid toRem);
 
 // prints
 void printRidPage(pageptr n);
