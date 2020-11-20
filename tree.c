@@ -145,6 +145,21 @@ void treeInsert(pageptr* tree, record toAdd) {
   return;
 }
 
+rid treeSearch(pageptr tree, int id) {
+  pageptr cur = tree;
+  int i;
+  while (cur.type == 1) {
+    // TODO: binary search
+    // find appropriate child
+    i = 0;
+    while (i < cur.ptr.node->nItems - 1 && cur.ptr.node->children[i+1].k <= id) i += 2;
+    cur = cur.ptr.node->children[i].p;
+  }
+  i = 0;
+  while (i < cur.ptr.rid->nItems && cur.ptr.rid->rids[i].id < id) ++i;
+  return cur.ptr.rid->rids[i].id == id ? cur.ptr.rid->rids[i] : (rid) { -1, NULL, 0 };
+}
+
 // TESTING CODE
 int main(int argc, char** argv) {
   initPageManager();
@@ -171,12 +186,11 @@ int main(int argc, char** argv) {
     record r = randRecords[i];
     treeInsert(root, r);
   }
-  
-  // exploreTree(*root);
-  
-  printRids(*root);
-  // printTreePage(*root);
 
+  pageptr cur = *root;
+  while (cur.type != 0) cur = cur.ptr.node->children[0].p;
+
+  if (checkTree(*root, nRecords)) exploreTree(*root);
   
   return 0;
 }

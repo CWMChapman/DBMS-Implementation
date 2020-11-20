@@ -19,10 +19,9 @@ void putPage(pageptr toPut) {
   return;
 }
 
-// TODO: deletion, handling non-full pages
 rid addRecord(record toAdd) {
   // current page is full, time to add a new one
-  if ((pm->curRecordPage->nItems) >= (PAGESIZE - sizeof(int)) / sizeof(record)) {
+  if ((pm->curRecordPage->nItems) >= (PAGESIZE - (2 * sizeof(int))) / sizeof(record)) {
     pm->curRecordPage = initRecordPage();
     (pm->writes)++; // writing the current record page out (???)
   }
@@ -31,6 +30,14 @@ rid addRecord(record toAdd) {
   pm->curRecordPage->records[pm->curRecordPage->nItems] = toAdd;
   (pm->curRecordPage->nItems)++;
   return ret;
+}
+
+// removes one record. TODO: make more elegant
+void remRecord(rid toRem) {
+  if (++(toRem.page->emptySlots) == RPP) {
+    free(toRem.page);
+  }
+  return;
 }
 
 pageptr genTreePageptr(treePage* ptr) {
@@ -57,6 +64,7 @@ pageptr genRecordPageptr(recordPage* rec) {
 recordPage* initRecordPage() {
   recordPage* ret = malloc(sizeof(recordPage));
   ret->nItems = 0;
+  ret->emptySlots = 0;
   return ret;
 }
 
@@ -120,6 +128,11 @@ void printRecordPage(pageptr n) {
   return;
 }
 
+void printRid(rid r) {
+  printf("====================\nid: %i\npage: %p\nslot: %i\n====================\n",
+         r.id, r.page, r.slot);
+}
+
 void printSizes() {
   printf("======================\n");
   printf("DEFINED SIZES\npagesize \t%i\ntsize \t\t%lu\nrsize \t\t%lu\n\n",
@@ -129,5 +142,10 @@ void printSizes() {
   printf("INTERNAL STRUCT SIZES\npageptr \t%lu\nkp \t\t%lu\nrecord \t\t%lu\nrid \t\t%lu\n",
          sizeof(pageptr), sizeof(kp), sizeof(record), sizeof(rid));
   printf("======================\n");
+  return;
+}
+
+void printPageStats() {
+  printf("READS: %i\nWRITES: %i\n");
   return;
 }
