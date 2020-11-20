@@ -22,8 +22,8 @@ void putPage(pageptr toPut) {
 rid addRecord(record toAdd) {
   // current page is full, time to add a new one
   if ((pm->curRecordPage->nItems) >= (PAGESIZE - (2 * sizeof(int))) / sizeof(record)) {
+    putPage(genRecordPageptr(pm->curRecordPage));
     pm->curRecordPage = initRecordPage();
-    (pm->writes)++; // writing the current record page out (???)
   }
   // create rid
   rid ret = { toAdd.id, pm->curRecordPage, pm->curRecordPage->nItems };

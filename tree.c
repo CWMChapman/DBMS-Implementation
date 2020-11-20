@@ -35,6 +35,7 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
         idx = i;
       }
     }
+    // read next page into memory, insert on it
     next = getPage(next);
     insert(next, toAdd, newChild);
 
@@ -53,8 +54,14 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
                 &(t->children[median+1]),
                 (TSIZE - median - 1) * sizeof(kp));
         *newChild = (passUp) { t->children[median].k, genTreePageptr(newPage) };
-        
-        if (toAdd.id >= t->children[median].k) t = newPage;
+
+        // write current page, insert into new page
+        if (toAdd.id >= t->children[median].k) {
+          t = newPage;
+          putPage(n);
+        }
+        // write new page, continue insert on current page
+        else putPage(genTreePageptr(newPage));
       }
       // not full--newChild should be back to null
       else newChild->key = -1;
@@ -62,14 +69,15 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       // insert into t
       // TODO: binary search instead of linear
       int idx = t->nItems;
-      for (int i = t->nItems - 2; i > 0; i -= 2) {
-        if (t->children[i].k > newKey) idx = i;
-      }
+      for (int i = t->nItems - 2; i > 0; i -= 2) if (t->children[i].k > newKey) idx = i;
       // make space
       memmove(&(t->children[idx+2]), &(t->children[idx]), sizeof(kp) * (t->nItems - idx));
       t->children[idx].k = newKey;
       t->children[idx+1].p = newPtr;
       t->nItems += 2;
+
+      // done inserting, write results back to memory
+      putPage(genTreePageptr(t));
     }
   }
   
@@ -79,7 +87,7 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     // need to split the node
     if (r->nItems == RSIZE) {
       ridPage* newLeaf = initRidPage();
-      pageptr newPageptr = getPage(genRidPageptr(newLeaf));
+      pageptr newPageptr = genRidPageptr(newLeaf);
       
       // update linked list pointers
       newLeaf->next = r->next;
@@ -94,8 +102,12 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       newLeaf->nItems = RSIZE - median;
       r->nItems = median;
       
-      // set r to correct node--only needs to change if in new node
-      if (toAdd.id >= r->rids[median].id) r = newLeaf;
+      // set r to correct node, write other node
+      if (toAdd.id >= r->rids[median].id) {
+        r = newLeaf;
+        putPage(n);
+      }
+      else putPage(newPageptr);
     }
     // insert into node
     // TODO: binary search instead of linear
@@ -108,6 +120,8 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     memmove(&(r->rids[idx+1]), &(r->rids[idx]), sizeof(rid) * (r->nItems - idx));
     r->rids[idx] = addRecord(toAdd);
     (r->nItems)++;
+    
+    putPage(genRidPageptr(r)); // done inserting, write node back to disk
   }
   return;
 }
@@ -116,7 +130,7 @@ void treeInsert(pageptr* tree, record toAdd) {
   // tree is empty
   if (tree->ptr.node->nItems == 0) {
     // initialize a new leaf node w/ rid pointing to the newly added record
-    pageptr newLeaf = getPage(genRidPageptr(initRidPage()));
+    pageptr newLeaf = genRidPageptr(initRidPage());
     rid newRid = addRecord(toAdd);
     ridPage* tmp = newLeaf.ptr.rid;
     tmp->rids[0] = newRid;
@@ -124,6 +138,7 @@ void treeInsert(pageptr* tree, record toAdd) {
     // add leaf node to tree
     tree->ptr.node->children[0].p = newLeaf;
     tree->ptr.node->nItems = 1;
+    putPage(newLeaf);
     return;
   }
 
@@ -191,6 +206,10 @@ int main(int argc, char** argv) {
   while (cur.type != 0) cur = cur.ptr.node->children[0].p;
 
   if (checkTree(*root, nRecords)) exploreTree(*root);
+
+  // IMPORTANT ASSUMPTIONS
+  // 1. generating new pages does not cost a read, only a write
+  printPageStats();
   
   return 0;
 }

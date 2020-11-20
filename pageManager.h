@@ -5,8 +5,8 @@
 This is a stubby page manager. It is meant to simply log page I/Os, so for 
 it to work properly  you need to go through it EVERY TIME YOU GET A NEW
 PAGE! It is set up to be fairly straightforward: you simply instantiate a 
-pageManager struct pointed to by <pm>, call getPage(<pm>, <pointer>) every 
-time you want to read a page, and putPage(<pm>, <pointer>) every time you
+pageManager struct pointed to by <pm>, call getPage(<pageptr>) every 
+time you want to read a page, and putPage(<pageptr>) every time you
 want to write a page. These functions simply update some counters and return 
 the pointer you gave them, so your code will work just fine without the page 
 manager and it is on you to call it!
