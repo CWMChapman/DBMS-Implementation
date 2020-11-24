@@ -6,7 +6,7 @@
 // TODO: move to pageManager
 pageptr initTreeNode() {
   treePage* ret = malloc(sizeof(treePage));
-  for (int i = 0; i < TSIZE; ++i) {
+  for (int i = 0; i < TREEPAGE_ITEMS; ++i) {
     if (i % 2) ret->children[i].p.ptr.node = NULL;
     else ret->children[i].k = -1;
   }
@@ -18,8 +18,6 @@ pageptr initTreeNode() {
 pageptr initTree() {
   return initTreeNode();
 }
-
-#define TESTNUM 123
 
 void insert(pageptr n, record toAdd, passUp* newChild) {
   // n tree node (i.e. non-leaf)
@@ -45,16 +43,16 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       pageptr newPtr = newChild->ptr;
 
       // full--need to split first
-      if (t->nItems >= TSIZE) {
+      if (t->nItems >= TREEPAGE_ITEMS) {
         treePage* newPage = malloc(sizeof(treePage));
-        int median = TSIZE / 2 - ((TSIZE / 2 + 1) % 2);
+        int median = TREEPAGE_ITEMS / 2 - ((TREEPAGE_ITEMS / 2 + 1) % 2);
+        *newChild = (passUp) { .ptr = genTreePageptr(newPage), .key = t->children[median].k };
         t->nItems = median;
-        newPage->nItems = (TSIZE - median - 1);
+        newPage->nItems = (TREEPAGE_ITEMS - median - 1);
         memmove(&(newPage->children[0]),
                 &(t->children[median+1]),
-                (TSIZE - median - 1) * sizeof(kp));
-        *newChild = (passUp) { t->children[median].k, genTreePageptr(newPage) };
-
+                (TREEPAGE_ITEMS - median - 1) * sizeof(kp));
+        
         // write current page, insert into new page
         if (toAdd.id >= t->children[median].k) {
           t = newPage;
@@ -70,7 +68,7 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       // TODO: binary search instead of linear
       int idx = t->nItems;
       for (int i = t->nItems - 2; i > 0; i -= 2) if (t->children[i].k > newKey) idx = i;
-      // make space
+      // make space, add items
       memmove(&(t->children[idx+2]), &(t->children[idx]), sizeof(kp) * (t->nItems - idx));
       t->children[idx].k = newKey;
       t->children[idx+1].p = newPtr;
@@ -85,7 +83,7 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
   else if (n.type == 0) {
     ridPage* r = n.ptr.rid; // convenience
     // need to split the node
-    if (r->nItems == RSIZE) {
+    if (r->nItems == RIDPAGE_ITEMS) {
       ridPage* newLeaf = initRidPage();
       pageptr newPageptr = genRidPageptr(newLeaf);
       
@@ -95,11 +93,11 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
       r->next = newPageptr;
       
       // split values--median and all subsequent values move to newLeaf
-      int median = RSIZE / 2;
+      int median = RIDPAGE_ITEMS / 2;
       newChild->key = r->rids[median].id;
       newChild->ptr = newPageptr; // genRidPageptr(newLeaf);
-      memmove(&(newLeaf->rids), &(r->rids[median]), sizeof(rid) * (RSIZE - median));
-      newLeaf->nItems = RSIZE - median;
+      memmove(&(newLeaf->rids), &(r->rids[median]), sizeof(rid) * (RIDPAGE_ITEMS - median));
+      newLeaf->nItems = RIDPAGE_ITEMS - median;
       r->nItems = median;
       
       // set r to correct node, write other node
@@ -118,6 +116,11 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     
     // make space in node
     memmove(&(r->rids[idx+1]), &(r->rids[idx]), sizeof(rid) * (r->nItems - idx));
+    /*
+      for (int j = r->nItems; j > idx; --j) {
+      r->rids[j] = r->rids[j-1];
+      }
+    */
     r->rids[idx] = addRecord(toAdd);
     (r->nItems)++;
     
@@ -175,7 +178,7 @@ rid treeSearch(pageptr tree, int id) {
   while (i < cur.ptr.rid->nItems && cur.ptr.rid->rids[i].id < id) ++i;
   return cur.ptr.rid->rids[i].id == id ?
     cur.ptr.rid->rids[i] :
-    (rid) { -1, NULL, 0 };
+    (rid) { .id = -1, .slot = 0, .page = NULL };
 }
 
 // TESTING CODE
@@ -189,30 +192,16 @@ int main(int argc, char** argv) {
     nRecords = atoi(argv[1]);
   }
   record* randRecords = genRandomRecords(nRecords);
-  /*
-  for (int i = 0; i < nRecords; i += 2) {
-    record r = randRecords[i];
-    treeInsert(root, r);
-  }
-  
-  for (int i = 1; i < nRecords; i += 2) {
-    record r = randRecords[i];
-    treeInsert(root, r);
-  }
-  */
   for (int i = 0; i < nRecords; ++i) {
     record r = randRecords[i];
     treeInsert(root, r);
   }
 
-  pageptr cur = *root;
-  while (cur.type != 0) cur = cur.ptr.node->children[0].p;
+  // checkTree(*root, nRecords);
+  // exploreTree(*root);
+  // if (checkTree(*root, nRecords)) exploreTree(*root);
 
-  if (checkTree(*root, nRecords)) exploreTree(*root);
-
-  // printRid(treeSearch(*root, 9));
-
-  // printSizes();
+  printSizes();
 
   // IMPORTANT ASSUMPTIONS
   // 1. generating new pages does not cost a read, only a write

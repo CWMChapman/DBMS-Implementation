@@ -16,11 +16,20 @@ manager and it is on you to call it!
 // DATA TYPES, CONSTANTS
 // = = = =
 // bytes per page--MUST BE MULTIPLE OF 8
-#define PAGESIZE 280
-#define TSIZE ((PAGESIZE - sizeof(int)) / sizeof(union kp) -            \
-               ((PAGESIZE - sizeof(int)) / sizeof(union kp) + 1) % 2)
-#define RSIZE (PAGESIZE - 2 * sizeof(struct ridPage*) - sizeof(int)) / sizeof(rid)
-#define RPP ((PAGESIZE - (2 * sizeof(int))) / sizeof(record))
+// sizes of structs--only works for 64-bit systems
+// all of these constants are checked against sizeof() at the initialization
+// of the page manager.
+#define PAGESIZE 264
+#define PAGEUNION_SIZE 8
+#define PAGEPTR_SIZE 16
+#define KP_SIZE 16
+#define RECORD_SIZE 64
+#define RID_SIZE 16
+// number of items per page
+#define RIDPAGE_ITEMS ((PAGESIZE - (2 * PAGEPTR_SIZE) - 8) / RID_SIZE)
+// must be odd--round down by 1 if even
+#define TREEPAGE_ITEMS (((PAGESIZE - 8) / KP_SIZE) - (((PAGESIZE - 8) / KP_SIZE + 1) % 2))
+#define RECORDPAGE_ITEMS ((PAGESIZE - 8) / RECORD_SIZE)
 
 // "INNER" STRUCTS--THINGS IN PAGES
 typedef union {
@@ -28,6 +37,7 @@ typedef union {
   struct treePage* node;
   struct recordPage* rec;
 } pageUnion;
+// SIZE: 8 bytes
 
 
 // struct to keep track of page pointers and their type
@@ -36,58 +46,61 @@ typedef union {
 // 1 = treePage
 // 2 = recordPage
 typedef struct {
-  int type;
+  int32_t type; // + 32 bit pad
   pageUnion ptr;
 } pageptr;
+// SIZE: 16 bytes
 
 // union for treePage to elegantly interlace keys and pointers
 typedef union kp {
-  int k;
+  int32_t k;
   pageptr p;
 } kp;
+// SIZE: 16 bytes
 
 // struct for passing values up a treeInsert
 typedef struct passUp {
-  int key;
   pageptr ptr;
+  int32_t key;
 } passUp;
+// SIZE: 24 bytes
 
 // individual record. Arbitrarily set to 64 bytes.
 typedef struct {
-  int id;
+  int32_t id;
   char f1[30];
   char f2[30];
 } record;
+// SIZE: 64 bytes
 
 // rid: points to a record page
 typedef struct {
-  int id;
+  int32_t id;
+  int32_t slot;
   struct recordPage* page;
-  int slot;
 } rid;
+// SIZE: 16 bytes
 
 // PAGE STRUCTS
 // ridPage: one leaf page or hash bucket. stores rids.
 typedef struct ridPage {
-  //struct ridPage* prev;
-  //struct ridPage* next;
   pageptr prev;
   pageptr next;
-  int nItems;
-  rid rids[(PAGESIZE - 2 * sizeof(pageptr) - sizeof(int)) / sizeof(rid)];
+  int64_t nItems;
+  rid rids[RIDPAGE_ITEMS];
 } ridPage;
 
 // treePage: one non-leaf node in the tree
 typedef struct treePage {
-  int nItems;
-  union kp children[(PAGESIZE - sizeof(int)) / sizeof(union kp)];
+  int64_t nItems;
+  union kp children[TREEPAGE_ITEMS];
 } treePage;
 
 // recordPage: one actual page in file of records
 typedef struct recordPage {
-  int nItems;
-  int emptySlots;
-  record records[RPP];
+  int32_t nItems;
+  int32_t emptySlots;
+  record records[RECORDPAGE_ITEMS];
 } recordPage;
 
 // page manager: right now only tracks reads/writes.
@@ -125,6 +138,7 @@ void remRecord(rid toRem);
 void printRidPage(pageptr n);
 void printTreePage(pageptr n);
 void printRecordPage(pageptr n);
+void printPage(pageptr n);
 
 void printRid(rid r);
 
