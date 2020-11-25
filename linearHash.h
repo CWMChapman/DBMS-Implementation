@@ -1,7 +1,9 @@
 #include <string.h>
-// #include<time.h>
+#include <math.h>
+#include <time.h>
 
 #include "pageManager.h"
+
 
 #define INITIAL_NUM_BUCKETS 4 // This is is the initial number of buckets the hash table will start with.
 
@@ -15,11 +17,23 @@ typedef struct {
     ridPage* buckets; //[INITIAL_NUM_BUCKETS]; // the actual table
 } hashTable;
 
+typedef struct {
+    int size;
+    int array[10000];
+} randArray;
+
+randArray* initRandArray();
+int randInt(int upper_bound); // implicit lower bound of 0
+int getRandKey(randArray* rA);
+
+
 hashTable* initHashTable();
 
+void doubleBuckets(hashTable* ht);
+void split(hashTable* ht);
 int hash(int level, int key);
-void insert(hashTable* ht, record toAdd);
-record lookup(hashTable* ht, int key);
+void insert(hashTable* ht, record toAdd, int optionalLevel);
+record lookup(hashTable* ht, int key, int optionalLevel);
 
 /*
 Christopher Chapman
