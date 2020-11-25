@@ -17,8 +17,8 @@ FUNCTIONS:
     which is what happened before we split, because it doesnt recognize that the level has changed.
 
 
-
-
+    For benchmarking:
+    https://github.com/CWMChapman/DBMS-Implementation/blob/8a2a08c29cd77fb5c751010f638bb5eaa8216c04/BPTNode.c
 
 
 
@@ -29,6 +29,7 @@ int hash(int level, int key) {
     for (int i = 31; i >= level; --i) {
         key &= ~(1UL << i); // this sets each of the bits we dont care about at this level to zero, so we can return an int that will represent the index into the array of buckets!
     }
+    // printf("key: %d\n", key);
     return key;
 }
 
@@ -38,10 +39,16 @@ void split(hashTable* ht) {
     ht->buckets[ht->next_index] = *initRidPage();
     ht->buckets[ht->next_index].next.type = -1; 
 
-    printf("bucketToBeSplit: %d\n", bucketToBeSplit.nItems);
-    
-    ht->num_buckets = ht->num_buckets * (1 << (ht->level+1));
+    printf("bucketToBeSplit.nItems: %lld\n", bucketToBeSplit.nItems);
+    int initialNumBuckets = ht->num_buckets;
+    ht->num_buckets = ht->num_buckets * 2;
     ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
+    for(int i = initialNumBuckets; i < ht->num_buckets; ++i) {
+        ht->buckets[i] = *initRidPage();
+        ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
+    }
+
+    ht->level++;
     while (bucketToBeSplit.next.type != -1) {
         for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
@@ -57,7 +64,6 @@ void split(hashTable* ht) {
         insert(ht, r);
     }
     ht->next_index++;
-    ht->level++;
     return;
 }
 
@@ -76,12 +82,13 @@ void insert(hashTable* ht, record toAdd) {
     while (bucket->next.type != -1) {
         bucket = bucket->next.ptr.rid;
     }
+    // printf("testing\n");
 
     // Is the number of items == to the max size (capacity) of the bucket? if so, add overflow bucket
     //If you add an overflow bucket, call split so that it can split the bucket for the next pointer and increment the level
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
 
-        // split(ht);
+        split(ht);
         // ht->level++;
         pageptr overflow_bucket = genRidPageptr(initRidPage());
         bucket->next = overflow_bucket;
@@ -156,15 +163,14 @@ int main(int argc, char** argv) {
     // insert(ht, r0);
     for (int i = 0; i < 100; i++) {
         insert(ht, (record){i, "i", "empty"});
-        printf("inserting: %d\n", i);
+        // printf("inserting: %d\n", i);
     }
 
     for (int i = 0; i < 100; i++) {
         record l = lookup(ht, i);
         printf("key: %d, value: %s\n", l.id, l.f1);
     }
-
-    split(ht);
+    // printf("the number of buckets: %d\n", ht->num_buckets);
     for (int i = 0; i < ht->num_buckets; ++i) {
         printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
     }
