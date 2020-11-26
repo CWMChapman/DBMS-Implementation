@@ -62,12 +62,13 @@ record* genRandomRecords(int nRecords) {
     return ret;
 }
 
-
 int hash(int level, int key) {
     level += 2;
+    int k = key;
     for (int i = 31; i >= level; --i) {
         key &= ~(1UL << i); // this sets each of the bits we dont care about at this level to zero, so we can return an int that will represent the index into the array of buckets!
     }
+    printf("key: %d, hash: %d, level: %d\n", k, key, level);
     return key;
 }
 
@@ -84,24 +85,20 @@ void doubleBuckets(hashTable* ht) {
 int getNumBucketsAtLevel(int level) {
     return INITIAL_NUM_BUCKETS  * (1 << level); // N(level) = N(0) * 2 ^ level, level must be positive
 }
+
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
     // free(&ht->buckets[ht->next_index]); // CHECK THIS FOR MEMORY LEAK!!!!!!!!!!
     ht->buckets[ht->next_index] = *initRidPage();
     ht->buckets[ht->next_index].next.type = -1; 
     
-    // increment level if next is pointing to the last bucket in that level also double buckets
-    if (ht->next_index == getNumBucketsAtLevel(ht->level)-1) {
-        doubleBuckets(ht);
-        ht->level++;
-    }
 
-    // split if this is the first time you've overflowed
+    // double buckets if this is the first time you've overflowed
     if (ht->next_index == 0) {
         doubleBuckets(ht);
     }
 
-    // reinsert all the items in teh bucket 
+    // reinsert all the items in the bucket 
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
         rid recordID = bucketToBeSplit.rids[i];
         record r = recordID.page->records[recordID.slot];
@@ -120,7 +117,17 @@ void split(hashTable* ht) {
         }
     }
 
-    ht->next_index++;
+    // increment level if next is pointing to the last bucket in that level also double buckets
+    if (ht->next_index == getNumBucketsAtLevel(ht->level)-1) {
+        printf("\n\n\nDOUBLING!!!! \t ht->next_index: %d, getNumBucketsAtLevel(%d)-1: %d\n\n\n", ht->next_index, ht->level, getNumBucketsAtLevel(ht->level)-1);
+        doubleBuckets(ht);
+        ht->level++;
+        ht->next_index = 0;
+    }
+    else {
+        ht->next_index++;
+    }
+
     return;
 }
 
@@ -132,10 +139,12 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
     if (optionalLevel == -1) {
         // use ht's level
         int bucketIndex = hash(ht->level, key);
-        if (bucketIndex <= ht->next_index && ht->num_buckets > 4) {
+        
+        if (bucketIndex < ht->next_index) {
+            // printf("\n not OPTIONAL ARGUMENT\n");
             bucketIndex = hash(ht->level+1, key);
-            // printf("bucketIndex: %d\n", bucketIndex);
         }
+
         bucket = &ht->buckets[bucketIndex];
     }
     else {
@@ -144,19 +153,23 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
         bucket = &ht->buckets[bucketIndex];
     }
 
-    // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
-    while (bucket->next.type != -1) {
-        // getPage(genRidPageptr(initRidPage()));
-        bucket = bucket->next.ptr.rid;
-    }
-
     // Is the number of items == to the max size (capacity) of the bucket? if so, add overflow bucket
     //If you add an overflow bucket, call split so that it can split the bucket for the next pointer and increment the level
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
-        bucket->next = genRidPageptr(initRidPage()); // set next to be an overflow bucket
-        bucket->next.type = -1;        
-        bucket = bucket->next.ptr.rid;
         split(ht);
+        insert(ht, toAdd, -1);
+        // return;
+        // bucket->next = getPage(genRidPageptr(initRidPage())); // set next to be an overflow bucket
+        // bucket->next.type = -1;       
+        // getPage(bucket->next); 
+        // bucket = bucket->next.ptr.rid;
+        printf("\nSPLITTING!!!!\n");
+    }
+
+    // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
+    while (bucket->next.type != -1) {
+        getPage(bucket->next);
+        bucket = bucket->next.ptr.rid;
     }
 
     rid recordID = addRecord(toAdd);
@@ -169,18 +182,20 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
 
 
 record search(hashTable* ht, int key) {
-    ridPage* bucket;
     int bucketIndex = hash(ht->level, key);
-    if(bucketIndex > ht->next_index && bucketIndex <= getNumBucketsAtLevel(ht->level)){
+    if (bucketIndex < ht->next_index) {
         bucketIndex = hash(ht->level+1, key);
     }
-    bucket = &ht->buckets[bucketIndex];
-    
+
+    printf("key: %d, bucketIndex = %d\n", key, bucketIndex);
+    ridPage* bucket = &ht->buckets[bucketIndex];
+    // printf("bucket->next.type = %d\n", bucket->next.type);
     while (bucket->next.type != -1) {
         for (int i = 0; i < bucket->nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucket->rids[i];
             if (recordID.id == key) {
+                getPage(getPage(genRidPageptr(initRidPage())));
                 return recordID.page->records[recordID.slot];
             }
         }
@@ -189,11 +204,12 @@ record search(hashTable* ht, int key) {
     for (int i = 0; i < bucket->nItems; ++i) {
         rid recordID = bucket->rids[i];
         if (recordID.id == key) {
+            getPage(getPage(genRidPageptr(initRidPage())));
             return recordID.page->records[recordID.slot];
         }
     }
 
-    record empty_record = {.id = -1, .f1 = "EMPTY"}; // this means there was no matching key in the database 
+    record empty_record = {.id = -1, .f1 = "EMPTYyyyyyyyyyyyyyy"}; // this means there was no matching key in the database 
     return empty_record;
 }
 
@@ -225,30 +241,30 @@ int main(int argc, char** argv) {
     hashTable* ht = initHashTable();
 
     
-    int n = 10000;
-    record* rArray = genRandomRecords(n);
+    int n = 200;
     
+    record* rArray = genRandomRecords(n);
     for (int i = 0; i < n; i++) {
         insert(ht, rArray[i], -1);
     }
 
-
     // search n key-value pairs
+    printf("\n\n\n\n\n\n\n");
     for (int i = 0; i < n; i++) {
-        record l = search(ht, rArray[i].id);
-        printf("key: %d, value: %s\n", l.id, l.f1);
+        record l = search(ht, i);
+        printf("found key: %d, value: %s\n", l.id, l.f1);
     }
 
 
 
 
-    printf("the number of buckets: %d\n", ht->num_buckets);
-    // for (int i = 0; i < ht->num_buckets; ++i) {
-    //     printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
-    // }
+    printf("the number of buckets: %d, level: %d\n", ht->num_buckets, ht->level);
+    for (int i = 0; i < ht->num_buckets; ++i) {
+        printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
+    }
     printf("next index: %d\n", ht->next_index);
     printf("getNumBucketsAtLevel(%d)-1 = %d\n", ht->level, getNumBucketsAtLevel(ht->level)-1);
-
+    printPageStats();
 
     return 0;
 }
