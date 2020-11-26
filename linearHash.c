@@ -34,6 +34,9 @@ FUNCTIONS:
 
 
 
+    LOOK AT EVERY TIME I MAKE A NEW BUCKET AND *******MAKE******* SURE THAT I AM SETTTING NEXT TO BE NEGATIVE 1
+
+
 
 */
 
@@ -62,15 +65,17 @@ record* genRandomRecords(int nRecords) {
     return ret;
 }
 
+
+
 int hash(int level, int key) {
     level += 2;
-    int k = key;
     for (int i = 31; i >= level; --i) {
         key &= ~(1UL << i); // this sets each of the bits we dont care about at this level to zero, so we can return an int that will represent the index into the array of buckets!
     }
-    printf("key: %d, hash: %d, level: %d\n", k, key, level);
     return key;
 }
+
+
 
 void doubleBuckets(hashTable* ht) {
     int initialNumBuckets = ht->num_buckets;
@@ -82,9 +87,13 @@ void doubleBuckets(hashTable* ht) {
     }
 }
 
+
+
 int getNumBucketsAtLevel(int level) {
     return INITIAL_NUM_BUCKETS  * (1 << level); // N(level) = N(0) * 2 ^ level, level must be positive
 }
+
+
 
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
@@ -119,7 +128,6 @@ void split(hashTable* ht) {
 
     // increment level if next is pointing to the last bucket in that level also double buckets
     if (ht->next_index == getNumBucketsAtLevel(ht->level)-1) {
-        printf("\n\n\nDOUBLING!!!! \t ht->next_index: %d, getNumBucketsAtLevel(%d)-1: %d\n\n\n", ht->next_index, ht->level, getNumBucketsAtLevel(ht->level)-1);
         doubleBuckets(ht);
         ht->level++;
         ht->next_index = 0;
@@ -140,10 +148,8 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
         // use ht's level
         int bucketIndex = hash(ht->level, key);
         
-        if (bucketIndex < ht->next_index) {
-            // printf("\n not OPTIONAL ARGUMENT\n");
+        if (bucketIndex < ht->next_index)
             bucketIndex = hash(ht->level+1, key);
-        }
 
         bucket = &ht->buckets[bucketIndex];
     }
@@ -153,28 +159,30 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
         bucket = &ht->buckets[bucketIndex];
     }
 
-    // Is the number of items == to the max size (capacity) of the bucket? if so, add overflow bucket
-    //If you add an overflow bucket, call split so that it can split the bucket for the next pointer and increment the level
+    // is the bucket full?
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
         split(ht);
-        insert(ht, toAdd, -1);
-        // return;
-        // bucket->next = getPage(genRidPageptr(initRidPage())); // set next to be an overflow bucket
-        // bucket->next.type = -1;       
-        // getPage(bucket->next); 
-        // bucket = bucket->next.ptr.rid;
-        printf("\nSPLITTING!!!!\n");
-    }
 
-    // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
-    while (bucket->next.type != -1) {
-        getPage(bucket->next);
-        bucket = bucket->next.ptr.rid;
+        int bucketIndex = hash(ht->level, key);
+        if (bucketIndex < ht->next_index) {
+            bucketIndex = hash(ht->level+1, key);
+        }
+        bucket = &ht->buckets[bucketIndex];
+
+        // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
+        while (bucket->next.type != -1) {
+            getPage(bucket->next);
+            bucket = bucket->next.ptr.rid;
+        }
+        if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
+            bucket->next = getPage(genRidPageptr(initRidPage())); // set next to be an overflow bucket
+            bucket = bucket->next.ptr.rid;
+            bucket->next.type = -1;       
+        }    
     }
 
     rid recordID = addRecord(toAdd);
-    int ridPageIndex = bucket->nItems;
-    bucket->rids[ridPageIndex] = recordID;
+    bucket->rids[bucket->nItems] = recordID;
     bucket->nItems++;
     putPage(genRecordPageptr(recordID.page)); // record the write
     return;
@@ -187,9 +195,7 @@ record search(hashTable* ht, int key) {
         bucketIndex = hash(ht->level+1, key);
     }
 
-    printf("key: %d, bucketIndex = %d\n", key, bucketIndex);
     ridPage* bucket = &ht->buckets[bucketIndex];
-    // printf("bucket->next.type = %d\n", bucket->next.type);
     while (bucket->next.type != -1) {
         for (int i = 0; i < bucket->nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
@@ -209,7 +215,7 @@ record search(hashTable* ht, int key) {
         }
     }
 
-    record empty_record = {.id = -1, .f1 = "EMPTYyyyyyyyyyyyyyy"}; // this means there was no matching key in the database 
+    record empty_record = {.id = -1, .f1 = "EMPTY"}; // this means there was no matching key in the database 
     return empty_record;
 }
 
@@ -239,29 +245,44 @@ hashTable* initHashTable() {
 int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
-
     
-    int n = 200;
+    int n = 100000;
     
+    clock_t t; 
+    t = clock(); 
     record* rArray = genRandomRecords(n);
+    t = clock() - t; 
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("genRandomRecords() took %f seconds to execute \n", time_taken); 
+
+
+    t = clock(); 
     for (int i = 0; i < n; i++) {
         insert(ht, rArray[i], -1);
     }
+    t = clock() - t; 
+    time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("insert() took %f seconds to execute \n", time_taken); 
 
+    t = clock();
     // search n key-value pairs
-    printf("\n\n\n\n\n\n\n");
+    // printf("\n\n\n\n\n\n\n");
     for (int i = 0; i < n; i++) {
         record l = search(ht, i);
-        printf("found key: %d, value: %s\n", l.id, l.f1);
+        if(l.id == -1)
+            printf("ERROR!! %d\n", i);
     }
+    t = clock() - t; 
+    time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("search() took %f seconds to execute \n", time_taken); 
 
 
 
 
-    printf("the number of buckets: %d, level: %d\n", ht->num_buckets, ht->level);
-    for (int i = 0; i < ht->num_buckets; ++i) {
-        printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
-    }
+    // printf("the number of buckets: %d, level: %d\n", ht->num_buckets, ht->level);
+    // for (int i = 0; i < ht->num_buckets; ++i) {
+    //     printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
+    // }
     printf("next index: %d\n", ht->next_index);
     printf("getNumBucketsAtLevel(%d)-1 = %d\n", ht->level, getNumBucketsAtLevel(ht->level)-1);
     printPageStats();
