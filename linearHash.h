@@ -17,23 +17,19 @@ typedef struct {
     ridPage* buckets; //[INITIAL_NUM_BUCKETS]; // the actual table
 } hashTable;
 
-typedef struct {
-    int size;
-    int array[10000];
-} randArray;
-
-randArray* initRandArray();
-int randInt(int upper_bound); // implicit lower bound of 0
-int getRandKey(randArray* rA);
-
-
 hashTable* initHashTable();
 
+// generate records
+record* genRandomRecords(int nRecords);
+
 void doubleBuckets(hashTable* ht);
-void split(hashTable* ht);
 int hash(int level, int key);
+void split(hashTable* ht);
+
 void insert(hashTable* ht, record toAdd, int optionalLevel);
-record lookup(hashTable* ht, int key, int optionalLevel);
+record search(hashTable* ht, int key);
+
+
 
 /*
 Christopher Chapman
