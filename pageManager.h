@@ -1,3 +1,6 @@
+#ifndef PAGEMANAGER_H
+#define PAGEMANAGER_H
+
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -146,3 +149,5 @@ void printSizes();
 void printPageStats();
 
 extern pageManager* pm;
+
+#endif

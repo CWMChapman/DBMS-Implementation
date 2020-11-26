@@ -8,7 +8,7 @@ void checkSizes() {
   printf("CHECKING SIZES...\n");
   if (PAGESIZE % 8) {
     printf("ERROR: pageSize IS INCORRECT. ABORTING.\n(expected multiple of 8, got %i)\n",
-      PAGESIZE);
+           PAGESIZE);
     abort();
   }
   if (PAGESIZE < 120) {
@@ -101,7 +101,9 @@ rid addRecord(record toAdd) {
 
 // removes one record. TODO: make more elegant
 void remRecord(rid toRem) {
+  toRem.page->records[toRem.slot].id = -1;
   if (++(toRem.page->emptySlots) == RECORDPAGE_ITEMS) free(toRem.page);
+  printRecordPage(genRecordPageptr(toRem.page));
   return;
 }
 
@@ -182,7 +184,8 @@ void printRecordPage(pageptr n) {
     printf("ERROR: wrong page type (expected 2, got %i)\n", n.type);
   }
   recordPage* tp = n.ptr.rec;
-  printf("=====================================\nRECORD PAGE\naddress: %p\nnItems: %i\n", tp, tp->nItems);
+  printf("=====================================\nRECORD PAGE\n");
+  printf("address: %p\nnItems: %i\nemptySlots: %i\n", tp, tp->nItems, tp->emptySlots);
   for (int i = 0; i < tp->nItems; ++i) {
     printf("%i \t| %s \t| %s\n",
            tp->records[i].id,
@@ -213,14 +216,17 @@ void printRid(rid r) {
 }
 
 void printSizes() {
-  printf("======================\n");
-  printf("DEFINED SIZES\npagesize \t%i\ntsize \t\t%i\nrsize \t\t%i\n\n",
-         PAGESIZE, TREEPAGE_ITEMS, RIDPAGE_ITEMS);
-  printf("PAGE SIZES\nridPage \t%lu\ntreePage \t%lu\nrecordPage \t%lu\n\n",
-         sizeof(ridPage), sizeof(treePage), sizeof(recordPage));
-  printf("INTERNAL STRUCT SIZES\npageptr \t%lu\nkp \t\t%lu\nrecord \t\t%lu\nrid \t\t%lu\n",
-         sizeof(pageptr), sizeof(kp), sizeof(record), sizeof(rid));
-  printf("======================\n");
+  printf("==========================\nPAGE SIZES\n");
+  printf("pagesize \t%i bytes\n"
+         "treepage \t%i kps\n"
+         "ridpage \t%i rids\n"
+         "recordpage \t%i records\n",
+         PAGESIZE, TREEPAGE_ITEMS, RIDPAGE_ITEMS, RECORDPAGE_ITEMS);
+  /* printf("PAGE SIZES\nridPage \t%lu\ntreePage \t%lu\nrecordPage \t%lu\n\n", */
+  /*        sizeof(ridPage), sizeof(treePage), sizeof(recordPage)); */
+  /* printf("INTERNAL STRUCT SIZES\npageptr \t%lu\nkp \t\t%lu\nrecord \t\t%lu\nrid \t\t%lu\n", */
+  /*        sizeof(pageptr), sizeof(kp), sizeof(record), sizeof(rid)); */
+  printf("==========================\n");
   return;
 }
 

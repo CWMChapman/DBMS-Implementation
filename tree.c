@@ -116,11 +116,6 @@ void insert(pageptr n, record toAdd, passUp* newChild) {
     
     // make space in node
     memmove(&(r->rids[idx+1]), &(r->rids[idx]), sizeof(rid) * (r->nItems - idx));
-    /*
-      for (int j = r->nItems; j > idx; --j) {
-      r->rids[j] = r->rids[j-1];
-      }
-    */
     r->rids[idx] = addRecord(toAdd);
     (r->nItems)++;
     
@@ -151,11 +146,8 @@ void treeInsert(pageptr* tree, record toAdd) {
   // handle splitting root--make new root, add pointers to split old root
   if (toPass->key != -1) {
     pageptr newRoot = initTreeNode();
-    // put the old root on the left
     newRoot.ptr.node->children[0].p = genTreePageptr(tree->ptr.node);
-    // new key value
     newRoot.ptr.node->children[1].k = toPass->key;
-    // new child on right
     newRoot.ptr.node->children[2].p = toPass->ptr;
     newRoot.ptr.node->nItems = 3;
     *tree = newRoot;
@@ -185,6 +177,8 @@ rid treeSearch(pageptr tree, int id) {
 int main(int argc, char** argv) {
   initPageManager();
 
+  // printSizes();
+
   pageptr* root = malloc(sizeof(pageptr));
   *root = initTreeNode();
   int nRecords = 150;
@@ -192,16 +186,26 @@ int main(int argc, char** argv) {
     nRecords = atoi(argv[1]);
   }
   record* randRecords = genRandomRecords(nRecords);
+  
   for (int i = 0; i < nRecords; ++i) {
     record r = randRecords[i];
     treeInsert(root, r);
   }
+  
 
-  // checkTree(*root, nRecords);
-  // exploreTree(*root);
-  // if (checkTree(*root, nRecords)) exploreTree(*root);
-
-  printSizes();
+  /*
+  rid rem1 = addRecord(randRecords[0]);
+  rid rem2 = addRecord(randRecords[1]);
+  rid rem3 = addRecord(randRecords[2]);
+  rid rem4 = addRecord(randRecords[3]);
+  printRecordPage(genRecordPageptr(pm->curRecordPage));
+  remRecord(rem1);
+  remRecord(rem2);
+  remRecord(rem3);
+  remRecord(rem4);
+  */
+  
+  if (checkTree(*root, nRecords)) exploreTree(*root);
 
   // IMPORTANT ASSUMPTIONS
   // 1. generating new pages does not cost a read, only a write
