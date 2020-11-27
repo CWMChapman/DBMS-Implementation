@@ -54,15 +54,15 @@ record* genRandomRecords(int nRecords) {
     }
 
     // shuffle array--swap each spot with a different one
-    record tmp;
-    int randInt;
-    srand(time(NULL));
-    for (int i = 0; i < nRecords; ++i) {
-        tmp = ret[i];
-        randInt = rand() % nRecords;
-        ret[i] = ret[randInt];
-        ret[randInt] = tmp;
-    }
+    // record tmp;
+    // int randInt;
+    // srand(time(NULL));
+    // for (int i = 0; i < nRecords; ++i) {
+    //     tmp = ret[i];
+    //     randInt = rand() % nRecords;
+    //     ret[i] = ret[randInt];
+    //     ret[randInt] = tmp;
+    // }
 
     return ret;
 }
@@ -276,18 +276,21 @@ int main(int argc, char** argv) {
     /* *** HASH TABLE CODE IS RUN HERE *** */
     record* rArray = genRandomRecords(n);
 
+    // insert
     for (int i = 0; i < n; i++) {
         insert(ht, rArray[i], -1);
     }
 
+    // search
     for (int i = 0; i < n; i++) {
         record l = search(ht, i);
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
 
+    // range search
     recVec v = rangeSearch(ht, 5, 10);
-    printRecVec(v);
+    printRecVec(v); 
 
     printf("Finished search!\n\n");
     /* ****** ^^ HASH TABLE CODE ^^ ****** */
