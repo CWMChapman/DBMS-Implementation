@@ -4,39 +4,6 @@
 FUNCTIONS:
 
     See rough algorithm in the textbook on page 381
-    delete
-
-    Currently...
-
-    I need to update lookup so it knows which hash scheme to use to find the bucket
-
-    then i need to make delete
-
-    make a random number generator so i can insert random keys so it doesnt become bottom heavy
-
-    For benchmarking:
-    https://github.com/CWMChapman/DBMS-Implementation/blob/8a2a08c29cd77fb5c751010f638bb5eaa8216c04/BPTNode.c
-
-
-
-    Functions:
-
-    search
-    range search: look up each item and search rest of bucket
-        record* rangeSearch(int min, int max)
-
-    insert
-
-
-    TODO: make sure im calling getPage and putPage!
-
-    include print stats 
-
-
-
-    LOOK AT EVERY TIME I MAKE A NEW BUCKET AND *******MAKE******* SURE THAT I AM SETTTING NEXT TO BE NEGATIVE 1
-
-
 
 */
 
