@@ -45,8 +45,8 @@ FUNCTIONS:
 record* genRandomRecords(int nRecords) {
     // generate in-order array
     record r;
-    strcpy(r.f1, "i");
-    strcpy(r.f2, "empty");
+    strcpy(r.f1, "f1");
+    strcpy(r.f2, "f2");
     record* ret = malloc(nRecords * sizeof(record));
     for (int i = 0; i < nRecords; ++i) {
         r.id = i;
@@ -107,6 +107,7 @@ void split(hashTable* ht) {
     // reinsert all the items in the bucket 
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
         rid recordID = bucketToBeSplit.rids[i];
+        getPage(genRecordPageptr(recordID.page));
         record r = recordID.page->records[recordID.slot];
         insert(ht, r, ht->level+1);
     }
@@ -119,6 +120,7 @@ void split(hashTable* ht) {
         for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucketToBeSplit.rids[i];
+            getPage(genRecordPageptr(recordID.page));
             record r = recordID.page->records[recordID.slot];
             insert(ht, r, ht->level+1);
         }
@@ -220,10 +222,29 @@ record search(hashTable* ht, int key) {
 }
 
 
+
+recVec rangeSearch(hashTable* ht, int min, int max) {
+    if (max == -1) {
+        max = INT_MAX;
+    }
+    recVec ret = initRecVec();
+// recVecPush(&ret, curRecord);
+    while (min <= max) {
+        record r = search(ht, min);
+        if (r.id != -1) {
+            recVecPush(&ret, r);
+        }
+        min++;
+    }
+
+    return ret;
+}
+
+
 hashTable* initHashTable() {
     hashTable* ht = malloc(sizeof(hashTable)); // why do i have to do this instead of hashTable* ht;
     ht->level = 0; // set hash level to 2 (that is, we are going to be looking at the 2 least significant bits in the binary represntation of the key -- see hashing scheme)
-    ht->num_buckets = 8; // the system only things there are 4 buckets to start, but because we double the number of buckets when next reaches the number of buckets at a given level, I need to start at 8
+    ht->num_buckets = INITIAL_NUM_BUCKETS*2; // the system only things there are 4 buckets to start, but because we double the number of buckets when next reaches the number of buckets at a given level, I need to start at 8
     ht->buckets = malloc(sizeof(ridPage) * ht->num_buckets);
     for(int i = 0; i < ht->num_buckets; ++i) {
         ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
@@ -246,7 +267,7 @@ int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
     
-    int n = 799970;
+    int n = 1800000; //799970
     printf("\n\nInserting %d records\n", n);
     clock_t t; 
     t = clock(); 
@@ -264,6 +285,10 @@ int main(int argc, char** argv) {
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
+
+    recVec v = rangeSearch(ht, 5, 10);
+    printRecVec(v);
+
     printf("Finished search!\n\n");
     /* ****** ^^ HASH TABLE CODE ^^ ****** */
 
@@ -282,6 +307,11 @@ int main(int argc, char** argv) {
     free(ht->buckets);
     free(ht);
     free(rArray);
+
+    int level = 17;
+    int num = 47871;
+    int h = hash(level, 47871);
+    printf("the hash of %d with level %d: %d\n", num, level, h);
    
 
     return 0;

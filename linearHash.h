@@ -1,8 +1,10 @@
 #include <string.h>
 #include <math.h>
 #include <time.h>
+#include <limits.h>
 
 #include "pageManager.h"
+#include "recVec.h"
 
 
 #define INITIAL_NUM_BUCKETS 4 // This is is the initial number of buckets the hash table will start with.
@@ -28,6 +30,7 @@ void split(hashTable* ht);
 
 void insert(hashTable* ht, record toAdd, int optionalLevel);
 record search(hashTable* ht, int key);
+recVec rangeSearch(hashTable* ht, int min, int max);
 
 
 
