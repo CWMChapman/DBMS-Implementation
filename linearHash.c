@@ -40,7 +40,6 @@ FUNCTIONS:
 
 */
 
-double db = 0;
 
 
 record* genRandomRecords(int nRecords) {
@@ -85,16 +84,10 @@ void doubleBuckets(hashTable* ht) {
     ht->num_buckets = ht->num_buckets * 2;
     ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
 
-    printf("loop is run %d times\n", ht->num_buckets - initialNumBuckets);
-    clock_t t1;
-    t1 = clock();
     for(int i = initialNumBuckets; i < ht->num_buckets; ++i) {
         ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
     }
-    t1 = clock() - t1;
-    double time_taken_1 = ((double)t1)/CLOCKS_PER_SEC; // in seconds
-    db += time_taken_1;
 }
 
 
@@ -107,20 +100,10 @@ int getNumBucketsAtLevel(int level) {
 
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
-    int index = ht->next_index + getNumBucketsAtLevel(ht->level);
-    printf("SPLITTINGGGGGGG: %d\n", index);
-    printf("numBuckets: %d\n", ht->num_buckets);
-    // ht->buckets[ht->next_index + getNumBucketsAtLevel(ht->level)] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0}; // clear the bucket that the bucket being split will be inserted into
-    // ht->buckets[ht->next_index + getNumBucketsAtLevel(ht->level)].next.type = -1;
 
     ht->buckets[ht->next_index] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
     ht->buckets[ht->next_index].next.type = -1; 
     
-
-    // double buckets if this is the first time you've overflowed
-    if (ht->next_index == 0)
-        doubleBuckets(ht);
-
     // reinsert all the items in the bucket 
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
         rid recordID = bucketToBeSplit.rids[i];
@@ -170,8 +153,6 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
     else {
         // use the argument-provided level
         int bucketIndex = hash(optionalLevel, key);
-        printf("insert2index = %d\n", bucketIndex);
-        printf("split2index = %d\n", ht->next_index + getNumBucketsAtLevel(ht->level));
         bucket = &ht->buckets[bucketIndex];
     }
 
@@ -184,13 +165,11 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
             bucketIndex = hash(ht->level+1, key);
         }
         bucket = &ht->buckets[bucketIndex];
-        printf("bucket->next.type_outside: %d\n", bucket->next.type);
 
         // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
         while (bucket->next.type != -1) {
             getPage(bucket->next);
             bucket = bucket->next.ptr.rid;
-            printf("bucket->next.type_inside: %d\n", bucket->next.type);
         }
 
         // Do we need to set next to be an overflow bucket?
@@ -244,7 +223,7 @@ record search(hashTable* ht, int key) {
 hashTable* initHashTable() {
     hashTable* ht = malloc(sizeof(hashTable)); // why do i have to do this instead of hashTable* ht;
     ht->level = 0; // set hash level to 2 (that is, we are going to be looking at the 2 least significant bits in the binary represntation of the key -- see hashing scheme)
-    ht->num_buckets = INITIAL_NUM_BUCKETS; // * pow(2,ht->level); <- when level zero its just 4
+    ht->num_buckets = 8; // the system only things there are 4 buckets to start, but because we double the number of buckets when next reaches the number of buckets at a given level, I need to start at 8
     ht->buckets = malloc(sizeof(ridPage) * ht->num_buckets);
     for(int i = 0; i < ht->num_buckets; ++i) {
         ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
@@ -267,7 +246,7 @@ int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
     
-    int n = 200000;
+    int n = 799970;
     printf("\n\nInserting %d records\n", n);
     clock_t t; 
     t = clock(); 
@@ -285,15 +264,18 @@ int main(int argc, char** argv) {
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
-    // printf("Finished search!\n\n");
+    printf("Finished search!\n\n");
     /* ****** ^^ HASH TABLE CODE ^^ ****** */
 
     t = clock() - t; 
     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
     printf("HashTable with %d records (insert-search) took %f seconds to execute\n", n, time_taken);
 
-    printf("doubleBuckets took %f seconds to execute\n\n", db);
     printf("there are %d buckets in the hash table\n", ht->num_buckets);
+    
+    // for (int i = 0; i < ht->num_buckets; i++) {
+    //     printf("ht->buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
+    // }
     
     printPageStats();
     
