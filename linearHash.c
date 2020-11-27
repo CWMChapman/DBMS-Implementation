@@ -40,10 +40,6 @@ FUNCTIONS:
 
 */
 
-double totalSplitTime = 0;
-// double totalDoubleTime = 0;
-// double totalReallocTime = 0;
-
 
 record* genRandomRecords(int nRecords) {
     // generate in-order array
@@ -177,13 +173,7 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
 
     // is the bucket full?
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
-
-        clock_t t; 
-        t = clock(); 
         split(ht);
-        t = clock() - t; 
-        double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-        totalSplitTime += time_taken;
 
         int bucketIndex = hash(ht->level, key);
         if (bucketIndex < ht->next_index) {
@@ -268,49 +258,28 @@ int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
     
-    int n = 1000;
+    int n = 100000;
     printf("\n\nInserting %d records\n", n);
-    
     clock_t t; 
     t = clock(); 
+
     record* rArray = genRandomRecords(n);
-    t = clock() - t; 
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("genRandomRecords() took %f seconds to execute \n", time_taken); 
 
-
-    t = clock(); 
     for (int i = 0; i < n; i++) {
         insert(ht, rArray[i], -1);
     }
-    t = clock() - t; 
-    time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("insert() took %f seconds to execute \n", time_taken); 
-    printf("split() took %f seconds to execute \n", totalSplitTime); 
-    // printf("doubleBuckets() took %f seconds to execute \n", totalDoubleTime); 
-    // printf("realloc() took %f seconds to execute \n", totalReallocTime); 
 
-    t = clock();
-    // search n key-value pairs
-    // printf("\n\n\n\n\n\n\n");
     for (int i = 0; i < n; i++) {
         record l = search(ht, i);
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
+    printf("Finished search!\n\n");
+
     t = clock() - t; 
-    time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("search() took %f seconds to execute \n\n\n", time_taken); 
-
-
-
-
-    // printf("the number of buckets: %d, level: %d\n", ht->num_buckets, ht->level);
-    // for (int i = 0; i < ht->num_buckets; ++i) {
-    //     printf("buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
-    // }
-    printf("next index: %d\n", ht->next_index);
-    printf("getNumBucketsAtLevel(%d)-1 = %d\n", ht->level, getNumBucketsAtLevel(ht->level)-1);
+    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    printf("HashTable with %d records (insert-search) took %f seconds to execute\n\n", n, time_taken);
+   
     printPageStats();
 
     return 0;
