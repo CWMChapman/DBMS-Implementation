@@ -40,6 +40,11 @@ FUNCTIONS:
 
 */
 
+double totalSplitTime = 0;
+// double totalDoubleTime = 0;
+// double totalReallocTime = 0;
+
+
 record* genRandomRecords(int nRecords) {
     // generate in-order array
     record r;
@@ -78,13 +83,26 @@ int hash(int level, int key) {
 
 
 void doubleBuckets(hashTable* ht) {
+    // clock_t t; 
+    // t = clock(); 
+
     int initialNumBuckets = ht->num_buckets;
     ht->num_buckets = ht->num_buckets * 2;
     ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
+
+    // clock_t t1;
+    // t1 = clock();
     for(int i = initialNumBuckets; i < ht->num_buckets; ++i) {
-        ht->buckets[i] = *initRidPage();
+        ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
     }
+    // t1 = clock() - t1;
+    // double time_taken_1 = ((double)t1)/CLOCKS_PER_SEC; // in seconds
+    // totalReallocTime += time_taken_1;
+
+    // t = clock() - t; 
+    // double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+    // totalDoubleTime += time_taken;
 }
 
 
@@ -98,14 +116,13 @@ int getNumBucketsAtLevel(int level) {
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
     // free(&ht->buckets[ht->next_index]); // CHECK THIS FOR MEMORY LEAK!!!!!!!!!!
-    ht->buckets[ht->next_index] = *initRidPage();
+    ht->buckets[ht->next_index] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
     ht->buckets[ht->next_index].next.type = -1; 
     
 
     // double buckets if this is the first time you've overflowed
-    if (ht->next_index == 0) {
+    if (ht->next_index == 0)
         doubleBuckets(ht);
-    }
 
     // reinsert all the items in the bucket 
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
@@ -145,7 +162,6 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
     int key = toAdd.id;
     ridPage* bucket;
     if (optionalLevel == -1) {
-        // use ht's level
         int bucketIndex = hash(ht->level, key);
         
         if (bucketIndex < ht->next_index)
@@ -161,7 +177,13 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
 
     // is the bucket full?
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
+
+        clock_t t; 
+        t = clock(); 
         split(ht);
+        t = clock() - t; 
+        double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
+        totalSplitTime += time_taken;
 
         int bucketIndex = hash(ht->level, key);
         if (bucketIndex < ht->next_index) {
@@ -201,7 +223,7 @@ record search(hashTable* ht, int key) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucket->rids[i];
             if (recordID.id == key) {
-                getPage(getPage(genRidPageptr(initRidPage())));
+                getPage(genRidPageptr(initRidPage()));
                 return recordID.page->records[recordID.slot];
             }
         }
@@ -210,7 +232,7 @@ record search(hashTable* ht, int key) {
     for (int i = 0; i < bucket->nItems; ++i) {
         rid recordID = bucket->rids[i];
         if (recordID.id == key) {
-            getPage(getPage(genRidPageptr(initRidPage())));
+            getPage(genRidPageptr(initRidPage()));
             return recordID.page->records[recordID.slot];
         }
     }
@@ -226,7 +248,7 @@ hashTable* initHashTable() {
     ht->num_buckets = INITIAL_NUM_BUCKETS; // * pow(2,ht->level); <- when level zero its just 4
     ht->buckets = malloc(sizeof(ridPage) * ht->num_buckets);
     for(int i = 0; i < ht->num_buckets; ++i) {
-        ht->buckets[i] = *initRidPage();
+        ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
     }
     pageUnion ptr;
@@ -246,7 +268,8 @@ int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
     
-    int n = 100000;
+    int n = 1000;
+    printf("\n\nInserting %d records\n", n);
     
     clock_t t; 
     t = clock(); 
@@ -263,6 +286,9 @@ int main(int argc, char** argv) {
     t = clock() - t; 
     time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
     printf("insert() took %f seconds to execute \n", time_taken); 
+    printf("split() took %f seconds to execute \n", totalSplitTime); 
+    // printf("doubleBuckets() took %f seconds to execute \n", totalDoubleTime); 
+    // printf("realloc() took %f seconds to execute \n", totalReallocTime); 
 
     t = clock();
     // search n key-value pairs
@@ -274,7 +300,7 @@ int main(int argc, char** argv) {
     }
     t = clock() - t; 
     time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("search() took %f seconds to execute \n", time_taken); 
+    printf("search() took %f seconds to execute \n\n\n", time_taken); 
 
 
 
