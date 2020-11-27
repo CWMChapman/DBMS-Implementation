@@ -88,7 +88,7 @@ void putPage(pageptr toPut) {
 
 rid addRecord(record toAdd) {
   // current page is full, time to add a new one
-  if ((pm->curRecordPage->nItems) >= (PAGESIZE - (2 * sizeof(int))) / sizeof(record)) {
+  if ((pm->curRecordPage->nItems) >= RECORDPAGE_ITEMS) {
     putPage(genRecordPageptr(pm->curRecordPage));
     pm->curRecordPage = initRecordPage();
   }
@@ -205,7 +205,7 @@ void printPage(pageptr n) {
     printTreePage(n);
     break;
   case 2:
-    printRidPage(n);
+    printRecordPage(n);
     break;
   }
 }

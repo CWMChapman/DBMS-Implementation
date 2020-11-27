@@ -173,6 +173,34 @@ rid treeSearch(pageptr tree, int id) {
     (rid) { .id = -1, .slot = 0, .page = NULL };
 }
 
+recVec treeRangeSearch(pageptr tree, int min, int max) {
+  if (max == -1) max = INT_MAX;
+  pageptr cur = getPage(tree);
+  int i;
+  // find first id
+  while (cur.type == 1) {
+    i = 0;
+    while (i < cur.ptr.node->nItems - 1 &&
+           cur.ptr.node->children[i+1].k <= min) i += 2;
+    cur = getPage(cur.ptr.node->children[i].p);
+  }
+  i = 0;
+  while (i < cur.ptr.rid->nItems && cur.ptr.rid->rids[i].id < min) ++i;
+  recVec ret = initRecVec();
+  record curRecord = cur.ptr.rid->rids[i].page->records[cur.ptr.rid->rids[i].slot];
+  while (curRecord.id <= max) {
+    recVecPush(&ret, curRecord);
+    if (i == cur.ptr.rid->nItems - 1) {
+      cur = getPage(cur.ptr.rid->next);
+      i = 0;
+      if (cur.ptr.rid == NULL) break;
+    }
+    else ++i;
+    curRecord = cur.ptr.rid->rids[i].page->records[cur.ptr.rid->rids[i].slot];
+  }
+  return ret;
+}
+
 // TESTING CODE
 int main(int argc, char** argv) {
   initPageManager();
@@ -191,6 +219,11 @@ int main(int argc, char** argv) {
     record r = randRecords[i];
     treeInsert(root, r);
   }
+
+  printPageStats();
+
+  printRecVec(treeRangeSearch(*root, -1, -1));
+
   
 
   /*
