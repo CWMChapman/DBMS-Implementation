@@ -147,6 +147,7 @@ void printRid(rid r);
 
 void printSizes();
 void printPageStats();
+void clearPageManager();
 
 extern pageManager* pm;
 

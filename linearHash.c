@@ -54,15 +54,15 @@ record* genRandomRecords(int nRecords) {
     }
 
     // shuffle array--swap each spot with a different one
-    // record tmp;
-    // int randInt;
-    // srand(time(NULL));
-    // for (int i = 0; i < nRecords; ++i) {
-    //     tmp = ret[i];
-    //     randInt = rand() % nRecords;
-    //     ret[i] = ret[randInt];
-    //     ret[randInt] = tmp;
-    // }
+    record tmp;
+    int randInt;
+    srand(time(NULL));
+    for (int i = 0; i < nRecords; ++i) {
+        tmp = ret[i];
+        randInt = rand() % nRecords;
+        ret[i] = ret[randInt];
+        ret[randInt] = tmp;
+    }
 
     return ret;
 }
@@ -280,6 +280,9 @@ int main(int argc, char** argv) {
     for (int i = 0; i < n; i++) {
         insert(ht, rArray[i], -1);
     }
+    printf("\nInsert\n");
+    printPageStats();
+    clearPageManager();
 
     // search
     for (int i = 0; i < n; i++) {
@@ -287,10 +290,16 @@ int main(int argc, char** argv) {
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
+    printf("\nSearch\n");
+    printPageStats();
+    clearPageManager();
 
     // range search
     recVec v = rangeSearch(ht, 5, 10);
     printRecVec(v); 
+    printf("\nRange Search\n");
+    printPageStats();
+    clearPageManager();
 
     printf("Finished search!\n\n");
     /* ****** ^^ HASH TABLE CODE ^^ ****** */
@@ -305,17 +314,11 @@ int main(int argc, char** argv) {
     //     printf("ht->buckets[%d].nItems = %d\n", i, ht->buckets[i].nItems);
     // }
     
-    printPageStats();
+    // printPageStats();
     
     free(ht->buckets);
     free(ht);
     free(rArray);
-
-    int level = 17;
-    int num = 47871;
-    int h = hash(level, 47871);
-    printf("the hash of %d with level %d: %d\n", num, level, h);
-   
 
     return 0;
 }
