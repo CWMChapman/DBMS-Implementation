@@ -144,6 +144,7 @@ void printRecordPage(pageptr n);
 void printPage(pageptr n);
 
 void printRid(rid r);
+void printRecord(record r);
 
 void printSizes();
 void printPageStats();

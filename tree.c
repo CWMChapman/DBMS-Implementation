@@ -155,7 +155,7 @@ void treeInsert(pageptr* tree, record toAdd) {
   return;
 }
 
-rid treeSearch(pageptr tree, int id) {
+record treeSearch(pageptr tree, int id) {
   pageptr cur = getPage(tree);
   int i;
   while (cur.type == 1) {
@@ -168,9 +168,9 @@ rid treeSearch(pageptr tree, int id) {
   }
   i = 0;
   while (i < cur.ptr.rid->nItems && cur.ptr.rid->rids[i].id < id) ++i;
-  return cur.ptr.rid->rids[i].id == id ?
-    cur.ptr.rid->rids[i] :
-    (rid) { .id = -1, .slot = 0, .page = NULL };
+  return (cur.ptr.rid->rids[i].id == id) ?
+    cur.ptr.rid->rids[i].page->records[cur.ptr.rid->rids[i].slot] :
+    (record) { .id = -1, .f1 = "NO DATA", .f2 = "NO DATA" };
 }
 
 recVec treeRangeSearch(pageptr tree, int min, int max) {
@@ -220,12 +220,18 @@ int main(int argc, char** argv) {
     treeInsert(root, r);
   }
 
-  printPageStats();
-
-  printRecVec(treeRangeSearch(*root, -1, -1));
-
+  printRecord(treeSearch(*root, 5));
   
+  // printRecVec(treeRangeSearch(*root, -1, -1));
 
+  /*
+  printf("before range search\n");
+  printPageStats();
+  treeRangeSearch(*root, -1, -1);
+  printf("after range search\n");
+  printPageStats();
+  */
+  
   /*
   rid rem1 = addRecord(randRecords[0]);
   rid rem2 = addRecord(randRecords[1]);

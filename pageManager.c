@@ -215,6 +215,13 @@ void printRid(rid r) {
          r.id, r.page, r.slot);
 }
 
+void printRecord(record r) {
+  printf("=====================================\n");
+  printf("%i\t| %s\t| %s\n", r.id, r.f1, r.f2);
+  printf("=====================================\n\n");
+  return;
+}
+
 void printSizes() {
   printf("==========================\nPAGE SIZES\n");
   printf("pagesize \t%i bytes\n"
