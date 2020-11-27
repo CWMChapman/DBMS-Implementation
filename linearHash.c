@@ -40,6 +40,8 @@ FUNCTIONS:
 
 */
 
+double db = 0;
+
 
 record* genRandomRecords(int nRecords) {
     // generate in-order array
@@ -79,26 +81,20 @@ int hash(int level, int key) {
 
 
 void doubleBuckets(hashTable* ht) {
-    // clock_t t; 
-    // t = clock(); 
-
     int initialNumBuckets = ht->num_buckets;
     ht->num_buckets = ht->num_buckets * 2;
     ht->buckets = realloc(ht->buckets, sizeof(ridPage) * ht->num_buckets);
 
-    // clock_t t1;
-    // t1 = clock();
+    printf("loop is run %d times\n", ht->num_buckets - initialNumBuckets);
+    clock_t t1;
+    t1 = clock();
     for(int i = initialNumBuckets; i < ht->num_buckets; ++i) {
         ht->buckets[i] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
         ht->buckets[i].next.type = -1; // this means that its not being used for overflow yet.
     }
-    // t1 = clock() - t1;
-    // double time_taken_1 = ((double)t1)/CLOCKS_PER_SEC; // in seconds
-    // totalReallocTime += time_taken_1;
-
-    // t = clock() - t; 
-    // double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    // totalDoubleTime += time_taken;
+    t1 = clock() - t1;
+    double time_taken_1 = ((double)t1)/CLOCKS_PER_SEC; // in seconds
+    db += time_taken_1;
 }
 
 
@@ -111,7 +107,12 @@ int getNumBucketsAtLevel(int level) {
 
 void split(hashTable* ht) {
     ridPage bucketToBeSplit = ht->buckets[ht->next_index];
-    // free(&ht->buckets[ht->next_index]); // CHECK THIS FOR MEMORY LEAK!!!!!!!!!!
+    int index = ht->next_index + getNumBucketsAtLevel(ht->level);
+    printf("SPLITTINGGGGGGG: %d\n", index);
+    printf("numBuckets: %d\n", ht->num_buckets);
+    // ht->buckets[ht->next_index + getNumBucketsAtLevel(ht->level)] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0}; // clear the bucket that the bucket being split will be inserted into
+    // ht->buckets[ht->next_index + getNumBucketsAtLevel(ht->level)].next.type = -1;
+
     ht->buckets[ht->next_index] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
     ht->buckets[ht->next_index].next.type = -1; 
     
@@ -126,6 +127,7 @@ void split(hashTable* ht) {
         record r = recordID.page->records[recordID.slot];
         insert(ht, r, ht->level+1);
     }
+
     // make sure to reinsert all of its overflow buckets
     while (bucketToBeSplit.next.type != -1) {
         ridPage* ptr = bucketToBeSplit.next.ptr.rid;
@@ -168,6 +170,8 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
     else {
         // use the argument-provided level
         int bucketIndex = hash(optionalLevel, key);
+        printf("insert2index = %d\n", bucketIndex);
+        printf("split2index = %d\n", ht->next_index + getNumBucketsAtLevel(ht->level));
         bucket = &ht->buckets[bucketIndex];
     }
 
@@ -180,14 +184,19 @@ void insert(hashTable* ht, record toAdd, int optionalLevel) {
             bucketIndex = hash(ht->level+1, key);
         }
         bucket = &ht->buckets[bucketIndex];
+        printf("bucket->next.type_outside: %d\n", bucket->next.type);
 
         // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
         while (bucket->next.type != -1) {
             getPage(bucket->next);
             bucket = bucket->next.ptr.rid;
+            printf("bucket->next.type_inside: %d\n", bucket->next.type);
         }
+
+        // Do we need to set next to be an overflow bucket?
         if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
-            bucket->next = getPage(genRidPageptr(initRidPage())); // set next to be an overflow bucket
+            bucket->next = getPage(genRidPageptr(initRidPage())); // also sets next.type
+            bucket->next.type = 0;
             bucket = bucket->next.ptr.rid;
             bucket->next.type = -1;       
         }    
@@ -213,7 +222,7 @@ record search(hashTable* ht, int key) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucket->rids[i];
             if (recordID.id == key) {
-                getPage(genRidPageptr(initRidPage()));
+                getPage(genRecordPageptr(recordID.page));
                 return recordID.page->records[recordID.slot];
             }
         }
@@ -222,7 +231,7 @@ record search(hashTable* ht, int key) {
     for (int i = 0; i < bucket->nItems; ++i) {
         rid recordID = bucket->rids[i];
         if (recordID.id == key) {
-            getPage(genRidPageptr(initRidPage()));
+            getPage(genRecordPageptr(recordID.page));
             return recordID.page->records[recordID.slot];
         }
     }
@@ -258,11 +267,13 @@ int main(int argc, char** argv) {
     initPageManager();
     hashTable* ht = initHashTable();
     
-    int n = 100000;
+    int n = 200000;
     printf("\n\nInserting %d records\n", n);
     clock_t t; 
     t = clock(); 
 
+
+    /* *** HASH TABLE CODE IS RUN HERE *** */
     record* rArray = genRandomRecords(n);
 
     for (int i = 0; i < n; i++) {
@@ -274,13 +285,22 @@ int main(int argc, char** argv) {
         if(l.id == -1)
             printf("ERROR!! %d\n", i);
     }
-    printf("Finished search!\n\n");
+    // printf("Finished search!\n\n");
+    /* ****** ^^ HASH TABLE CODE ^^ ****** */
 
     t = clock() - t; 
     double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("HashTable with %d records (insert-search) took %f seconds to execute\n\n", n, time_taken);
-   
+    printf("HashTable with %d records (insert-search) took %f seconds to execute\n", n, time_taken);
+
+    printf("doubleBuckets took %f seconds to execute\n\n", db);
+    printf("there are %d buckets in the hash table\n", ht->num_buckets);
+    
     printPageStats();
+    
+    free(ht->buckets);
+    free(ht);
+    free(rArray);
+   
 
     return 0;
 }
