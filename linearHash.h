@@ -28,9 +28,9 @@ void doubleBuckets(hashTable* ht);
 int hash(int level, int key);
 void split(hashTable* ht);
 
-void insert(hashTable* ht, record toAdd, int optionalLevel);
-record search(hashTable* ht, int key);
-recVec rangeSearch(hashTable* ht, int min, int max);
+void hashInsert(hashTable* ht, record toAdd, int optionalLevel);
+record hashSearch(hashTable* ht, int key);
+recVec hashRangeSearch(hashTable* ht, int min, int max);
 
 
 
