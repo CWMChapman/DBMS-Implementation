@@ -1,4 +1,5 @@
 #include "recVec.h"
+#include<string.h>
 
 recVec initRecVec() {
   record* newArr = malloc(4 * sizeof(record));
@@ -6,15 +7,15 @@ recVec initRecVec() {
 }
 
 void recVecPush(recVec* rv, record toPush) {
-  if (rv->nItems == rv->size) rv->arr = realloc(rv->arr, rv->size *= 2);
+  if (rv->nItems == rv->size) rv->arr = realloc(rv->arr, (rv->size *= 2) * RECORD_SIZE);
   rv->arr[rv->nItems++] = toPush;
   return;
 }
 
 /*
-record recVecPeek(recVec* rv) {
+  record recVecPeek(recVec* rv) {
   return rv->arr[rv->nItems-1];
-}
+  }
 
 void recVecPop(recVec* rv) {
   if (--rv->nItems <= rv->size / 2) rv->arr = realloc(rv->arr, rv->size /= 2);
