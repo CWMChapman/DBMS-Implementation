@@ -168,6 +168,7 @@ record treeSearch(pageptr tree, int id) {
   }
   i = 0;
   while (i < cur.ptr.rid->nItems && cur.ptr.rid->rids[i].id < id) ++i;
+  // THIS SHOULD BE A PAGE READ BUT NOT RELEVANT FOR COMPARISON TO HASH
   return (cur.ptr.rid->rids[i].id == id) ?
     cur.ptr.rid->rids[i].page->records[cur.ptr.rid->rids[i].slot] :
     (record) { .id = -1, .f1 = "NO DATA", .f2 = "NO DATA" };
