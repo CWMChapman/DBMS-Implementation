@@ -1,3 +1,6 @@
+#ifndef PAGEMANAGER_H
+#define PAGEMANAGER_H
+
 #include<stdlib.h>
 #include<stdio.h>
 
@@ -141,8 +144,11 @@ void printRecordPage(pageptr n);
 void printPage(pageptr n);
 
 void printRid(rid r);
+void printRecord(record r);
 
 void printSizes();
 void printPageStats();
 
 extern pageManager* pm;
+
+#endif
