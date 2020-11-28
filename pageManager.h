@@ -150,6 +150,7 @@ void printSizes();
 void printPageStats();
 void clearPageManager();
 
-extern pageManager* pm;
+//extern pageManager* pm;
+pageManager* pm;
 
 #endif
