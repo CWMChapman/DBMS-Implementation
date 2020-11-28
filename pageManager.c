@@ -241,3 +241,8 @@ void printPageStats() {
   printf("READS: %i\nWRITES: %i\n", pm->reads, pm->writes);
   return;
 }
+void clearPageManager() {
+  pm->reads = 0;
+  pm->writes = 0;
+  pm->curRecordPage = initRecordPage();
+}

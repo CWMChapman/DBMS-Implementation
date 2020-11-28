@@ -148,6 +148,7 @@ void printRecord(record r);
 
 void printSizes();
 void printPageStats();
+void clearPageManager();
 
 extern pageManager* pm;
 

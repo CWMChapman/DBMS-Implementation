@@ -6,8 +6,8 @@ all: tree
 tree: tree.c tree.h treeHelper.o pageManager.o recVec.o
 	$(CC) $(FLAGS) -o tree.e tree.c treeHelper.o pageManager.o recVec.o
 
-hash: linearHash.c linearHash.h pageManager.o
-	$(CC) $(FLAGS) -o linearHash.e linearHash.c pageManager.o
+hash: linearHash.c linearHash.h pageManager.o recVec.o
+	$(CC) $(FLAGS) -o linearHash.e linearHash.c pageManager.o recVec.o
 
 pmtest: pageManagerTest.c pageManager.o
 	$(CC) $(FLAGS) -o pmtest.e pageManagerTest.c pageManager.o
