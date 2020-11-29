@@ -26,13 +26,13 @@ with open('plotStats.txt') as f:
 
 plt.plot(x_tree, y_tree, label="Tree")
 plt.plot(x_hash, y_hash, label="Hash")
-plt.yscale("log")
-plt.xscale("log")
+# plt.yscale("log")
+# plt.xscale("log")
 plt.xlabel('Number of Records')
 plt.ylabel('Number of Reads')
 plt.title('Range Search')
 plt.legend()
-plt.show()
-plt.save("rangeSearchReadsPlot.png")
+# plt.show()
+plt.savefig("rangeSearchReadsPlot.png", dpi=300)
 
     
