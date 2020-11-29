@@ -38,7 +38,7 @@ int getNumBucketsAtLevel(int level) {
 
 
 void split(hashTable* ht) {
-    ridPage bucketToBeSplit = ht->buckets[ht->next_index];
+    ridPage bucketToBeSplit = *getPage(genRidPageptr(&ht->buckets[ht->next_index])).ptr.rid;
     
     ht->buckets[ht->next_index] = (ridPage){.next = genRidPageptr(NULL), .prev = genRidPageptr(NULL), .nItems = 0};
     ht->buckets[ht->next_index].next.type = -1; 
@@ -47,20 +47,18 @@ void split(hashTable* ht) {
     // reinsert all the items in the bucket 
     for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
         rid recordID = bucketToBeSplit.rids[i];
-        getPage(genRecordPageptr(recordID.page));
         record r = recordID.page->records[recordID.slot];
         hashInsert(ht, r, ht->level+1);
     }
 
     // make sure to reinsert all of its overflow buckets
     while (bucketToBeSplit.next.type != -1) {
-        ridPage* ptr = bucketToBeSplit.next.ptr.rid;
+        ridPage* ptr = getPage(bucketToBeSplit.next).ptr.rid;
         bucketToBeSplit = *ptr;
         free(ptr);
         for (int i = 0; i < bucketToBeSplit.nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucketToBeSplit.rids[i];
-            getPage(genRecordPageptr(recordID.page));
             record r = recordID.page->records[recordID.slot];
             hashInsert(ht, r, ht->level+1);
         }
@@ -88,18 +86,18 @@ void hashInsert(hashTable* ht, record toAdd, int optionalLevel) {
         if (bucketIndex < ht->next_index)
             bucketIndex = hash(ht->level+1, key);
 
-        bucket = &ht->buckets[bucketIndex];
+        bucket = getPage(genRidPageptr(&ht->buckets[bucketIndex])).ptr.rid;
     }
     else {
         // use the argument-provided level
         bucketIndex = hash(optionalLevel, key);
-        bucket = &ht->buckets[bucketIndex];
+        bucket = getPage(genRidPageptr(&ht->buckets[bucketIndex])).ptr.rid;
     }
 
     // is the bucket full?
     if (bucket->nItems == sizeof(bucket->rids)/sizeof(bucket->rids[0])) {
         if (optionalLevel == -1){
-            // dont split if youre
+            // only split if you're not already splitting -- i.e. dont split if youre already in the processes of splitting 
             split(ht);
         }
 
@@ -107,12 +105,11 @@ void hashInsert(hashTable* ht, record toAdd, int optionalLevel) {
         if (bucketIndex < ht->next_index) {
             bucketIndex = hash(ht->level+1, key);
         }
-        bucket = &ht->buckets[bucketIndex];
+        bucket = getPage(genRidPageptr(&ht->buckets[bucketIndex])).ptr.rid;
 
         // the bucket has an overflow bucket if the type is not equal to -1. -1 implies that there is no overflow.
         while (bucket->next.type != -1) {
-            getPage(bucket->next);
-            bucket = bucket->next.ptr.rid;
+            bucket = getPage(bucket->next).ptr.rid;
         }
 
         // Do we need to set next to be an overflow bucket?
@@ -138,22 +135,24 @@ record hashSearch(hashTable* ht, int key) {
         bucketIndex = hash(ht->level+1, key);
     }
 
-    ridPage* bucket = &ht->buckets[bucketIndex];
+    // get main bucket -- record an ridpage read
+    ridPage* bucket = getPage(genRidPageptr(&ht->buckets[bucketIndex])).ptr.rid;
+
+    // get potential overflow buckets -- record an ridpage read for each overflow
     while (bucket->next.type != -1) {
         for (int i = 0; i < bucket->nItems; ++i) {
             // I need to look through the records from the record ids to search for the key and then return the whole record.
             rid recordID = bucket->rids[i];
             if (recordID.id == key) {
-                getPage(genRecordPageptr(recordID.page));
                 return recordID.page->records[recordID.slot];
             }
         }
-        bucket = bucket->next.ptr.rid;
+        
+        bucket = getPage(bucket->next).ptr.rid;
     }
     for (int i = 0; i < bucket->nItems; ++i) {
         rid recordID = bucket->rids[i];
         if (recordID.id == key) {
-            getPage(genRecordPageptr(recordID.page));
             return recordID.page->records[recordID.slot];
         }
     }

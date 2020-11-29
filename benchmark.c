@@ -53,6 +53,57 @@ record* genRandomRecords(int nRecords) {
   return ret;
 }
 
+void benchmarkTreeRangeSearch(record* testArr, int nRecords, FILE* fout) {
+  pageptr root = initTree();
+  fprintf(fout, "nRecords: %i\n", nRecords);
+
+  printf("tree inserting...\n");
+  
+  clearPageManager();
+  for (int i = 0; i < nRecords; ++i) treeInsert(&root, testArr[i]);
+  fprintf(fout, "INSERT \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+
+  printf("tree searching...\n");
+  
+  clearPageManager();
+  for (int i = 0; i < nRecords; ++i) treeSearch(root, testArr[i].id);
+  fprintf(fout, "SEARCH \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+
+  printf("tree range searching...\n");
+
+  clearPageManager();
+  treeRangeSearch(root, -1, -1);
+  fprintf(fout, "RS-ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  return;
+}
+
+void benchmarkHashRangeSearch(record* testArr, int nRecords, FILE* fout) {
+  hashTable* ht = initHashTable();
+  fprintf(fout, "nRecords: %i\n", nRecords);
+
+  printf("hash inserting...\n");
+  
+  clearPageManager();
+  for (int i = 0; i < nRecords; ++i) hashInsert(ht, testArr[i], -1);
+  fprintf(fout, "INSERT \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+
+  printf("hash searching...\n");
+  
+  clearPageManager();
+  for (int i = 0; i < nRecords; ++i) hashSearch(ht, testArr[i].id);
+  fprintf(fout, "SEARCH \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+
+  fputs("RANGES\n", fout);
+
+  printf("hash range searching...\n");
+
+  clearPageManager();
+  hashRangeSearch(ht, 0, nRecords-1);
+  fprintf(fout, "ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  return;
+}
+
+
 void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
   pageptr root = initTree();
   fprintf(fout, "nRecords: %i\n", nRecords);
@@ -108,7 +159,6 @@ void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
 }
 
 void benchmarkHash(record* testArr, int nRecords, FILE* fout) {
-  // pageptr root = initTree();
   hashTable* ht = initHashTable();
   fprintf(fout, "nRecords: %i\n", nRecords);
 
@@ -202,6 +252,44 @@ int main(int argc, char** argv) {
   benchmarkHash(reverse, nRecords, fout);
   
   fclose(fout);
+
+
+
+  //for python plots
+
+  // fout = fopen("plotStats.txt", "w+");
+  // writeSizes(fout);
+
+  // record* random10 = genRandomRecords(10);
+  // record* random100 = genRandomRecords(100);
+  // record* random1000 = genRandomRecords(1000);
+  // record* random10000 = genRandomRecords(10000);
+  // record* random100000 = genRandomRecords(100000);
+  // record* random1000000 = genRandomRecords(1000000);
+  // record* random10000000 = genRandomRecords(10000000);
+  // printf("done generating record arrays\n");
+
+
+  // fputs("\nTREE\n", fout);
+  // benchmarkTreeRangeSearch(random10, 10, fout);
+  // benchmarkTreeRangeSearch(random100, 100, fout);
+  // benchmarkTreeRangeSearch(random1000, 1000, fout);
+  // benchmarkTreeRangeSearch(random10000, 10000, fout);
+  // benchmarkTreeRangeSearch(random100000, 100000, fout);
+  // benchmarkTreeRangeSearch(random1000000, 1000000, fout);
+  // benchmarkTreeRangeSearch(random10000000, 10000000, fout);
+
+  // fputs("\n========\nHASH\n", fout);
+  // benchmarkHashRangeSearch(random10, 10, fout);
+  // benchmarkHashRangeSearch(random100, 100, fout);
+  // benchmarkHashRangeSearch(random1000, 1000, fout);
+  // benchmarkHashRangeSearch(random10000, 10000, fout);
+  // benchmarkHashRangeSearch(random100000, 100000, fout);
+  // benchmarkHashRangeSearch(random1000000, 1000000, fout);
+  // benchmarkHashRangeSearch(random10000000, 10000000, fout);
+
+  // fclose(fout);
+
 
   return 0;
 
