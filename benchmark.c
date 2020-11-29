@@ -1,5 +1,6 @@
 #include "tree.h"
 #include "linearHash.h"
+#include<math.h>
 
 record* genInOrderRecords(int nRecords) {
   printf("generating in-order records...\n");
@@ -40,6 +41,51 @@ record* genRandomRecords(int nRecords) {
   }
   // shuffle array--swap each spot with a different one
   
+  record tmp;
+  int randInt;
+  srand(time(NULL));
+  for (int i = 0; i < nRecords; ++i) {
+    tmp = ret[i];
+    randInt = rand() % nRecords;
+    ret[i] = ret[randInt];
+    ret[randInt] = tmp;
+  }
+  
+  return ret;
+}
+
+record* genSkewedRecords(int nRecords) {
+  printf("generating skewed records...\n");
+  record* ret = malloc(nRecords * sizeof(record));
+  float nWaves = 2;
+  int intensity = 100;
+  float tau = 6.2831853 * nWaves;
+  int c = 0;
+  int x, jump;
+  for (int i = 0; i < nRecords; ++i) {
+    ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
+    x = tau * ((double) i / (double)nRecords);
+    jump = (cos(x) + 1) * intensity;
+    c += (jump == 0 ? 1 : jump);
+  }
+  return ret;
+}
+
+record* genRandomSkewedRecords(int nRecords) {
+  printf("generating random skewed records...\n");
+  record* ret = malloc(nRecords * sizeof(record));
+  float nWaves = 2;
+  int intensity = 100;
+  float tau = 6.2831853 * nWaves;
+  int c = 0;
+  int x, jump;
+  for (int i = 0; i < nRecords; ++i) {
+    ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
+    x = tau * ((double) i / (double)nRecords);
+    jump = (cos(x) + 1) * intensity;
+    c += (jump == 0 ? 1 : jump);
+  }
+
   record tmp;
   int randInt;
   srand(time(NULL));
@@ -250,10 +296,26 @@ int main(int argc, char** argv) {
   
   fputs("\nHASH\n", fout);
   benchmarkHash(reverse, nRecords, fout);
+
+  fputs("\n========\nSKEWED RECORDS\n", fout);
+  record* skew = genSkewedRecords(nRecords);
+
+  fputs("TREE\n", fout);
+  benchmarkTree(skew, nRecords, fout);
+  
+  fputs("\nHASH\n", fout);
+  benchmarkHash(skew, nRecords, fout);
+
+  fputs("\n========\nRANDOM SKEWED RECORDS\n", fout);
+  record* randSkew = genRandomSkewedRecords(nRecords);
+
+  fputs("TREE\n", fout);
+  benchmarkTree(randSkew, nRecords, fout);
+  
+  fputs("\nHASH\n", fout);
+  benchmarkHash(randSkew, nRecords, fout);
   
   fclose(fout);
-
-
 
   //for python plots
 
