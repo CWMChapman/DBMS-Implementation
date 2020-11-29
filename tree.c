@@ -202,6 +202,7 @@ recVec treeRangeSearch(pageptr tree, int min, int max) {
   return ret;
 }
 
+/*
 // TESTING CODE
 int main(int argc, char** argv) {
   initPageManager();
@@ -225,15 +226,15 @@ int main(int argc, char** argv) {
   
   // printRecVec(treeRangeSearch(*root, -1, -1));
 
-  /*
+  
   printf("before range search\n");
   printPageStats();
   treeRangeSearch(*root, -1, -1);
   printf("after range search\n");
   printPageStats();
-  */
   
-  /*
+  
+  
   rid rem1 = addRecord(randRecords[0]);
   rid rem2 = addRecord(randRecords[1]);
   rid rem3 = addRecord(randRecords[2]);
@@ -243,7 +244,6 @@ int main(int argc, char** argv) {
   remRecord(rem2);
   remRecord(rem3);
   remRecord(rem4);
-  */
   
   if (checkTree(*root, nRecords)) exploreTree(*root);
 
@@ -253,3 +253,4 @@ int main(int argc, char** argv) {
   
   return 0;
 }
+*/

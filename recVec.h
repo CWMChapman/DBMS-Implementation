@@ -1,3 +1,6 @@
+#ifndef RECVEC_H
+#define RECVEC_H
+
 #include "pageManager.h"
 
 // Simple dynamic array. Commented functions implemented, but not needed.
@@ -17,3 +20,5 @@ void recVecPush(recVec* rv, record toPush);
 // void recVecPop(recVec* rv);
 
 void printRecVec(recVec rv);
+
+#endif

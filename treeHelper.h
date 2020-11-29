@@ -1,3 +1,6 @@
+#ifndef TREEHELPER_H
+#define TREEHELPER_H
+
 #include <string.h>
 #include <unistd.h>
 #include <time.h>
@@ -13,3 +16,5 @@ int checkTree(pageptr root, int nItems);
 
 // generate records
 record* genRandomRecords(int nRecords);
+
+#endif
