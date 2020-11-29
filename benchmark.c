@@ -55,51 +55,51 @@ record* genRandomRecords(int nRecords) {
 
 void benchmarkTreeRangeSearch(record* testArr, int nRecords, FILE* fout) {
   pageptr root = initTree();
-  fprintf(fout, "nRecords: %i\n", nRecords);
+  fprintf(fout, "%i ", nRecords);
 
   printf("tree inserting...\n");
   
   clearPageManager();
   for (int i = 0; i < nRecords; ++i) treeInsert(&root, testArr[i]);
-  fprintf(fout, "INSERT \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  // fprintf(fout, ", INSERT R: %i, W: %i", pm->reads, pm->writes);
 
-  printf("tree searching...\n");
+  // printf("tree searching...\n");
   
-  clearPageManager();
-  for (int i = 0; i < nRecords; ++i) treeSearch(root, testArr[i].id);
-  fprintf(fout, "SEARCH \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  // clearPageManager();
+  // for (int i = 0; i < nRecords; ++i) treeSearch(root, testArr[i].id);
+  // fprintf(fout, ", SEARCH R: %i, W: %i", pm->reads, pm->writes);
 
   printf("tree range searching...\n");
 
   clearPageManager();
   treeRangeSearch(root, -1, -1);
-  fprintf(fout, "RS-ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  // fprintf(fout, ", RS-ALL R: %i, W: %i\n", pm->reads, pm->writes);
+  fprintf(fout, "%i\n", pm->reads);
   return;
 }
 
 void benchmarkHashRangeSearch(record* testArr, int nRecords, FILE* fout) {
   hashTable* ht = initHashTable();
-  fprintf(fout, "nRecords: %i\n", nRecords);
+  fprintf(fout, "%i ", nRecords);
 
   printf("hash inserting...\n");
   
   clearPageManager();
   for (int i = 0; i < nRecords; ++i) hashInsert(ht, testArr[i], -1);
-  fprintf(fout, "INSERT \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  // fprintf(fout, ", INSERT R: %i, W: %i", pm->reads, pm->writes);
 
-  printf("hash searching...\n");
+  // printf("hash searching...\n");
   
-  clearPageManager();
-  for (int i = 0; i < nRecords; ++i) hashSearch(ht, testArr[i].id);
-  fprintf(fout, "SEARCH \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
-
-  fputs("RANGES\n", fout);
+  // clearPageManager();
+  // for (int i = 0; i < nRecords; ++i) hashSearch(ht, testArr[i].id);
+  // fprintf(fout, ", SEARCH R: %i, W: %i", pm->reads, pm->writes);
 
   printf("hash range searching...\n");
 
   clearPageManager();
   hashRangeSearch(ht, 0, nRecords-1);
-  fprintf(fout, "ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+  // fprintf(fout, ", RS-ALL R: %i, W: %i\n", pm->reads, pm->writes);
+  fprintf(fout, "%i\n", pm->reads);
   return;
 }
 
@@ -212,6 +212,12 @@ void benchmarkHash(record* testArr, int nRecords, FILE* fout) {
   return;
 }
 
+
+
+
+
+
+
 int main(int argc, char** argv) {
   int nRecords = 150;
   if (argc == 2) nRecords = atoi(argv[1]);
@@ -255,40 +261,44 @@ int main(int argc, char** argv) {
 
 
 
-  //for python plots
+  // for python plots
 
-  // fout = fopen("plotStats.txt", "w+");
-  // writeSizes(fout);
+  fout = fopen("plotStats.txt", "w+");
+  writeSizes(fout);
 
-  // record* random10 = genRandomRecords(10);
-  // record* random100 = genRandomRecords(100);
-  // record* random1000 = genRandomRecords(1000);
-  // record* random10000 = genRandomRecords(10000);
-  // record* random100000 = genRandomRecords(100000);
-  // record* random1000000 = genRandomRecords(1000000);
-  // record* random10000000 = genRandomRecords(10000000);
-  // printf("done generating record arrays\n");
+  record* random10 = genRandomRecords(10);
+  record* random100 = genRandomRecords(100);
+  record* random1000 = genRandomRecords(1000);
+  record* random10000 = genRandomRecords(10000);
+  record* random100000 = genRandomRecords(100000);
+  record* random1000000 = genRandomRecords(1000000);
+  record* random10000000 = genRandomRecords(10000000);
+  // record* random100000000 = genRandomRecords(100000000); //comp cant handle
+  printf("done generating record arrays\n");
 
+  fputs("nRecords nReads\n", fout);
+  fputs("\nTREE\n", fout);
+  benchmarkTreeRangeSearch(random10, 10, fout);
+  benchmarkTreeRangeSearch(random100, 100, fout);
+  benchmarkTreeRangeSearch(random1000, 1000, fout);
+  benchmarkTreeRangeSearch(random10000, 10000, fout);
+  benchmarkTreeRangeSearch(random100000, 100000, fout);
+  benchmarkTreeRangeSearch(random1000000, 1000000, fout);
+  benchmarkTreeRangeSearch(random10000000, 10000000, fout);
+  // benchmarkTreeRangeSearch(random100000000, 100000000, fout); //comp cant handle
 
-  // fputs("\nTREE\n", fout);
-  // benchmarkTreeRangeSearch(random10, 10, fout);
-  // benchmarkTreeRangeSearch(random100, 100, fout);
-  // benchmarkTreeRangeSearch(random1000, 1000, fout);
-  // benchmarkTreeRangeSearch(random10000, 10000, fout);
-  // benchmarkTreeRangeSearch(random100000, 100000, fout);
-  // benchmarkTreeRangeSearch(random1000000, 1000000, fout);
-  // benchmarkTreeRangeSearch(random10000000, 10000000, fout);
-
-  // fputs("\n========\nHASH\n", fout);
-  // benchmarkHashRangeSearch(random10, 10, fout);
-  // benchmarkHashRangeSearch(random100, 100, fout);
-  // benchmarkHashRangeSearch(random1000, 1000, fout);
-  // benchmarkHashRangeSearch(random10000, 10000, fout);
-  // benchmarkHashRangeSearch(random100000, 100000, fout);
-  // benchmarkHashRangeSearch(random1000000, 1000000, fout);
-  // benchmarkHashRangeSearch(random10000000, 10000000, fout);
-
-  // fclose(fout);
+  fputs("\nHASH\n", fout);
+  benchmarkHashRangeSearch(random10, 10, fout);
+  benchmarkHashRangeSearch(random100, 100, fout);
+  benchmarkHashRangeSearch(random1000, 1000, fout);
+  benchmarkHashRangeSearch(random10000, 10000, fout);
+  benchmarkHashRangeSearch(random100000, 100000, fout);
+  benchmarkHashRangeSearch(random1000000, 1000000, fout);
+  benchmarkHashRangeSearch(random10000000, 10000000, fout);
+  // benchmarkHashRangeSearch(random100000000, 100000000, fout); //comp cant handle 
+  
+  fputs("\n", fout);
+  fclose(fout);
 
 
   return 0;
