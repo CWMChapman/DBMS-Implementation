@@ -1,4 +1,16 @@
 # DBMS-Implementation
+## Empirically Benchmarking Tree-based and Hash-based Database Implementations
+### To compile the program: 
+```zsh
+$ make
+```
+
+### To run the benchmark:
+```zsh
+$ ./benchmark.e <number of records to insert into data structures -- defaults to 150>
+```
+
+### Description
 
 For the CPS377 Final Project we plan to develop a C implementation of a Linear Hash Table and a B+-Tree to compare their benefits and downsides. We expect to demonstrate that B+-trees are better at range queries and why hash tables are better optimized for key equality searches.
 

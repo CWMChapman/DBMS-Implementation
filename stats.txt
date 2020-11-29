@@ -1,5 +1,6 @@
 ==========================
 PAGE SIZES
+<<<<<<< HEAD
 pagesize 	4096 bytes
 treepage 	255 kps
 ridpage 	253 rids
@@ -24,19 +25,53 @@ HASH
 nRecords: 150
 INSERT 		| R: 150 	W: 152
 SEARCH 		| R: 150 	W: 0
+=======
+pagesize 	512 bytes
+treepage 	31 kps
+ridpage 	29 rids
+recordpage 	7 records
+==========================
+RANDOM RECORDS
+TREE
+nRecords: 1000
+INSERT 		| R: 1665 	W: 1251
+SEARCH 		| R: 3000 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 16 	W: 0
+SECOND Q 	| R: 16 	W: 0
+LAST Q 		| R: 17 	W: 0
+ALL 		| R: 56 	W: 0
+
+HASH
+nRecords: 1000
+INSERT 		| R: 2717 	W: 2911
+SEARCH 		| R: 1012 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
+<<<<<<< HEAD
 FIRST Q 	| R: 38 	W: 0
 SECOND Q 	| R: 39 	W: 0
 LAST Q 		| R: 38 	W: 0
 ALL 		| R: 150 	W: 0
+=======
+FIRST Q 	| R: 254 	W: 0
+SECOND Q 	| R: 258 	W: 0
+LAST Q 		| R: 251 	W: 0
+ALL 		| R: 1012 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
 
 ========
 IN ORDER RECORDS
 TREE
+<<<<<<< HEAD
 nRecords: 150
 INSERT 		| R: 149 	W: 152
 SEARCH 		| R: 300 	W: 0
@@ -54,19 +89,46 @@ HASH
 nRecords: 150
 INSERT 		| R: 150 	W: 152
 SEARCH 		| R: 150 	W: 0
+=======
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 20 	W: 0
+SECOND Q 	| R: 21 	W: 0
+LAST Q 		| R: 21 	W: 0
+ALL 		| R: 74 	W: 0
+
+HASH
+nRecords: 1000
+INSERT 		| R: 2860 	W: 3131
+SEARCH 		| R: 1000 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
+<<<<<<< HEAD
 FIRST Q 	| R: 38 	W: 0
 SECOND Q 	| R: 39 	W: 0
 LAST Q 		| R: 38 	W: 0
 ALL 		| R: 150 	W: 0
+=======
+FIRST Q 	| R: 251 	W: 0
+SECOND Q 	| R: 251 	W: 0
+LAST Q 		| R: 250 	W: 0
+ALL 		| R: 1000 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
 
 ========
 REVERSE ORDER RECORDS
 TREE
+<<<<<<< HEAD
 nRecords: 150
 INSERT 		| R: 149 	W: 152
 SEARCH 		| R: 300 	W: 0
@@ -84,12 +146,98 @@ HASH
 nRecords: 150
 INSERT 		| R: 150 	W: 152
 SEARCH 		| R: 150 	W: 0
+=======
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 20 	W: 0
+SECOND Q 	| R: 21 	W: 0
+LAST Q 		| R: 21 	W: 0
+ALL 		| R: 74 	W: 0
+
+HASH
+nRecords: 1000
+INSERT 		| R: 2860 	W: 3131
+SEARCH 		| R: 1000 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
+FIRST Q 	| R: 251 	W: 0
+SECOND Q 	| R: 251 	W: 0
+LAST Q 		| R: 250 	W: 0
+ALL 		| R: 1000 	W: 0
+
+========
+SKEWED RECORDS
+TREE
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 74 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 74 	W: 0
+FIRST Q 	| R: 3 	W: 0
+SECOND Q 	| R: 3 	W: 0
+LAST Q 		| R: 74 	W: 0
+ALL 		| R: 74 	W: 0
+
+HASH
+nRecords: 1000
+INSERT 		| R: 2542 	W: 2381
+SEARCH 		| R: 1093 	W: 0
+RANGES
+FIRST 3 	| R: 4 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 11 	W: 0
+LAST 10 	| R: 11 	W: 0
+FIRST Q 	| R: 257 	W: 0
+SECOND Q 	| R: 257 	W: 0
+LAST Q 		| R: 256 	W: 0
+ALL 		| R: 1024 	W: 0
+
+========
+RANDOM SKEWED RECORDS
+TREE
+nRecords: 1000
+INSERT 		| R: 1665 	W: 1251
+SEARCH 		| R: 3000 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 56 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 56 	W: 0
+FIRST Q 	| R: 3 	W: 0
+SECOND Q 	| R: 3 	W: 0
+LAST Q 		| R: 56 	W: 0
+ALL 		| R: 56 	W: 0
+
+HASH
+nRecords: 1000
+INSERT 		| R: 3096 	W: 2979
+SEARCH 		| R: 1093 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
+RANGES
+FIRST 3 	| R: 4 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 11 	W: 0
+LAST 10 	| R: 11 	W: 0
+<<<<<<< HEAD
 FIRST Q 	| R: 38 	W: 0
 SECOND Q 	| R: 39 	W: 0
 LAST Q 		| R: 38 	W: 0
 ALL 		| R: 150 	W: 0
+=======
+FIRST Q 	| R: 257 	W: 0
+SECOND Q 	| R: 257 	W: 0
+LAST Q 		| R: 256 	W: 0
+ALL 		| R: 1024 	W: 0
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88

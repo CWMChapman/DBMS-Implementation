@@ -22,7 +22,11 @@ manager and it is on you to call it!
 // sizes of structs--only works for 64-bit systems
 // all of these constants are checked against sizeof() at the initialization
 // of the page manager.
+<<<<<<< HEAD
 #define PAGESIZE 4096
+=======
+#define PAGESIZE 512
+>>>>>>> 500dd5481ccd631f1c8a7de4449f0f503eaaad88
 #define PAGEUNION_SIZE 8
 #define PAGEPTR_SIZE 16
 #define KP_SIZE 16

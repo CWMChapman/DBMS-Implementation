@@ -1,5 +1,6 @@
 #include "tree.h"
 #include "linearHash.h"
+#include<math.h>
 
 record* genInOrderRecords(int nRecords) {
   printf("generating in-order records...\n");
@@ -40,6 +41,51 @@ record* genRandomRecords(int nRecords) {
   }
   // shuffle array--swap each spot with a different one
   
+  record tmp;
+  int randInt;
+  srand(time(NULL));
+  for (int i = 0; i < nRecords; ++i) {
+    tmp = ret[i];
+    randInt = rand() % nRecords;
+    ret[i] = ret[randInt];
+    ret[randInt] = tmp;
+  }
+  
+  return ret;
+}
+
+record* genSkewedRecords(int nRecords) {
+  printf("generating skewed records...\n");
+  record* ret = malloc(nRecords * sizeof(record));
+  float nWaves = 2;
+  int intensity = 100;
+  float tau = 6.2831853 * nWaves;
+  int c = 0;
+  int x, jump;
+  for (int i = 0; i < nRecords; ++i) {
+    ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
+    x = tau * ((double) i / (double)nRecords);
+    jump = (cos(x) + 1) * intensity;
+    c += (jump == 0 ? 1 : jump);
+  }
+  return ret;
+}
+
+record* genRandomSkewedRecords(int nRecords) {
+  printf("generating random skewed records...\n");
+  record* ret = malloc(nRecords * sizeof(record));
+  float nWaves = 2;
+  int intensity = 100;
+  float tau = 6.2831853 * nWaves;
+  int c = 0;
+  int x, jump;
+  for (int i = 0; i < nRecords; ++i) {
+    ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
+    x = tau * ((double) i / (double)nRecords);
+    jump = (cos(x) + 1) * intensity;
+    c += (jump == 0 ? 1 : jump);
+  }
+
   record tmp;
   int randInt;
   srand(time(NULL));
@@ -155,6 +201,8 @@ void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
   clearPageManager();
   treeRangeSearch(root, -1, -1);
   fprintf(fout, "ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
+
+  freeTree(root);
   return;
 }
 
@@ -239,6 +287,8 @@ int main(int argc, char** argv) {
   fputs("\nHASH\n", fout);
   benchmarkHash(random, nRecords, fout);
 
+  free(random);
+
   fputs("\n========\nIN ORDER RECORDS\n", fout);
   record* inOrder = genInOrderRecords(nRecords);
 
@@ -248,6 +298,8 @@ int main(int argc, char** argv) {
   fputs("\nHASH\n", fout);
   benchmarkHash(inOrder, nRecords, fout);
 
+  free(inOrder);
+
   fputs("\n========\nREVERSE ORDER RECORDS\n", fout);
   record* reverse = genReverseOrderRecords(nRecords);
 
@@ -256,10 +308,32 @@ int main(int argc, char** argv) {
   
   fputs("\nHASH\n", fout);
   benchmarkHash(reverse, nRecords, fout);
+
+  free(reverse);
+
+  fputs("\n========\nSKEWED RECORDS\n", fout);
+  record* skew = genSkewedRecords(nRecords);
+
+  fputs("TREE\n", fout);
+  benchmarkTree(skew, nRecords, fout);
+  
+  fputs("\nHASH\n", fout);
+  benchmarkHash(skew, nRecords, fout);
+
+  free(skew);
+
+  fputs("\n========\nRANDOM SKEWED RECORDS\n", fout);
+  record* randSkew = genRandomSkewedRecords(nRecords);
+
+  fputs("TREE\n", fout);
+  benchmarkTree(randSkew, nRecords, fout);
+  
+  fputs("\nHASH\n", fout);
+  benchmarkHash(randSkew, nRecords, fout);
+
+  free(randSkew);
   
   fclose(fout);
-
-
 
   // for python plots
 
