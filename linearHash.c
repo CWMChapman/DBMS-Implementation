@@ -165,19 +165,12 @@ record hashSearch(hashTable* ht, int key) {
 
 
 recVec hashRangeSearch(hashTable* ht, int min, int max) {
-    if (max == -1) {
-        max = INT_MAX;
-    }
     recVec ret = initRecVec();
-// recVecPush(&ret, curRecord);
     while (min <= max) {
         record r = hashSearch(ht, min);
-        if (r.id != -1) {
-            recVecPush(&ret, r);
-        }
+        if (r.id != -1) recVecPush(&ret, r);
         min++;
     }
-
     return ret;
 }
 
