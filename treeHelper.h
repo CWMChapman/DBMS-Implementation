@@ -14,7 +14,4 @@ void exploreTree(pageptr root);
 // validity
 int checkTree(pageptr root, int nItems);
 
-// generate records
-record* genRandomRecords(int nRecords);
-
 #endif

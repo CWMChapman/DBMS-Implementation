@@ -8,34 +8,6 @@ FUNCTIONS:
 */
 
 
-
-record* genRandomRecords(int nRecords) {
-    // generate in-order array
-    record r;
-    strcpy(r.f1, "f1");
-    strcpy(r.f2, "f2");
-    record* ret = malloc(nRecords * sizeof(record));
-    for (int i = 0; i < nRecords; ++i) {
-        r.id = i;
-        ret[i] = r;
-    }
-
-    // shuffle array--swap each spot with a different one
-    record tmp;
-    int randInt;
-    srand(time(NULL));
-    for (int i = 0; i < nRecords; ++i) {
-        tmp = ret[i];
-        randInt = rand() % nRecords;
-        ret[i] = ret[randInt];
-        ret[randInt] = tmp;
-    }
-
-    return ret;
-}
-
-
-
 int hash(int level, int key) {
     level += 2;
     for (int i = 31; i >= level; --i) {
@@ -228,60 +200,4 @@ hashTable* initHashTable() {
     ht->next = next; // setting the next pointer (see linear hash scheme) to be the first bucket
 
     return ht;
-}
-
-
-// Code to test the hash_table functions
-int main(int argc, char** argv) {
-    initPageManager();
-    hashTable* ht = initHashTable();
-    
-    int n = 1000000;
-    printf("\n\nInserting %d records\n", n);
-    clock_t t; 
-    t = clock(); 
-
-
-    /* *** HASH TABLE CODE IS RUN HERE *** */
-    record* rArray = genRandomRecords(n);
-
-    // insert
-    for (int i = 0; i < n; i++) {
-        hashInsert(ht, rArray[i], -1);
-    }
-    printf("\nInsert\n");
-    printPageStats();
-    clearPageManager();
-
-    // search
-    for (int i = 0; i < n; i++) {
-        record l = hashSearch(ht, i);
-        if(l.id == -1)
-            printf("ERROR!! cannot find key: %d\n", i);
-    }
-    printf("\nSearch\n");
-    printPageStats();
-    clearPageManager();
-
-    // range search
-    recVec v = hashRangeSearch(ht, 5, 10);
-    // printRecVec(v); 
-    printf("\nRange Search\n");
-    printPageStats();
-    clearPageManager();
-
-    printf("Finished search!\n\n");
-    /* ****** ^^ HASH TABLE CODE ^^ ****** */
-
-    t = clock() - t; 
-    double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds
-    printf("HashTable with %d records (insert-search) took %f seconds to execute\n", n, time_taken);
-
-    printf("there are %d buckets in the hash table\n", ht->num_buckets);
-    
-    free(ht->buckets);
-    free(ht);
-    free(rArray);
-
-    return 0;
 }

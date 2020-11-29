@@ -1,0 +1,59 @@
+==========================
+PAGE SIZES
+pagesize 	4000 bytes
+treepage 	249 kps
+ridpage 	247 rids
+recordpage 	62 records
+==========================
+RANDOM RECORDS
+TREE
+nRecords: 10000
+INSERT 		| R: 9999 	W: 10285
+SEARCH 		| R: 20000 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 16 	W: 0
+SECOND Q 	| R: 19 	W: 0
+LAST Q 		| R: 18 	W: 0
+ALL 		| R: 65 	W: 0
+
+HASH
+
+========
+IN ORDER RECORDS
+TREE
+nRecords: 10000
+INSERT 		| R: 9999 	W: 10321
+SEARCH 		| R: 20000 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 22 	W: 0
+SECOND Q 	| R: 22 	W: 0
+LAST Q 		| R: 23 	W: 0
+ALL 		| R: 83 	W: 0
+
+HASH
+
+========
+REVERSE ORDER RECORDS
+TREE
+nRecords: 10000
+INSERT 		| R: 9999 	W: 10321
+SEARCH 		| R: 20000 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 22 	W: 0
+SECOND Q 	| R: 22 	W: 0
+LAST Q 		| R: 23 	W: 0
+ALL 		| R: 83 	W: 0
+
+HASH

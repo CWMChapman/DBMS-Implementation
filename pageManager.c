@@ -229,11 +229,19 @@ void printSizes() {
          "ridpage \t%i rids\n"
          "recordpage \t%i records\n",
          PAGESIZE, TREEPAGE_ITEMS, RIDPAGE_ITEMS, RECORDPAGE_ITEMS);
-  /* printf("PAGE SIZES\nridPage \t%lu\ntreePage \t%lu\nrecordPage \t%lu\n\n", */
-  /*        sizeof(ridPage), sizeof(treePage), sizeof(recordPage)); */
-  /* printf("INTERNAL STRUCT SIZES\npageptr \t%lu\nkp \t\t%lu\nrecord \t\t%lu\nrid \t\t%lu\n", */
-  /*        sizeof(pageptr), sizeof(kp), sizeof(record), sizeof(rid)); */
   printf("==========================\n");
+  return;
+}
+
+void writeSizes(FILE* fout) {
+  fprintf(fout, "==========================\nPAGE SIZES\n");
+  fprintf(fout,
+          "pagesize \t%i bytes\n"
+         "treepage \t%i kps\n"
+         "ridpage \t%i rids\n"
+         "recordpage \t%i records\n",
+         PAGESIZE, TREEPAGE_ITEMS, RIDPAGE_ITEMS, RECORDPAGE_ITEMS);
+  fprintf(fout, "==========================\n");
   return;
 }
 

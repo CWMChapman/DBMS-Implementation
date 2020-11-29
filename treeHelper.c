@@ -125,28 +125,3 @@ void exploreTree(pageptr root) {
   }
   return;
 }
-
-record* genRandomRecords(int nRecords) {
-  // generate in-order array
-  record r;
-  strcpy(r.f1, "Gregory");
-  strcpy(r.f2, "Alice");
-  record* ret = malloc(nRecords * sizeof(record));
-  for (int i = 0; i < nRecords; ++i) {
-    r.id = i;
-    ret[i] = r;
-  }
-  // shuffle array--swap each spot with a different one
-  
-  record tmp;
-  int randInt;
-  srand(time(NULL));
-  for (int i = 0; i < nRecords; ++i) {
-    tmp = ret[i];
-    randInt = rand() % nRecords;
-    ret[i] = ret[randInt];
-    ret[randInt] = tmp;
-  }
-  
-  return ret;
-}

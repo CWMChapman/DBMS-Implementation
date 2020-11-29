@@ -1,19 +1,16 @@
 CC=gcc
-FLAGS=-Wall -g
+FLAGS=-Wall
 
-all: treeBench
+all: benchmark
 
-treeBench: treeBench.c tree.o treeHelper.o pageManager.o recVec.o
-	$(CC) $(FLAGS) -o treeBench.e treeBench.c tree.o treeHelper.o pageManager.o recVec.o
+benchmark: benchmark.c tree.o treeHelper.o pageManager.o recVec.o linearHash.o
+	$(CC) $(FLAGS) -o benchmark.e benchmark.c tree.o treeHelper.o linearHash.o pageManager.o recVec.o
 
-tree.o: tree.c tree.h recVec.o
-	$(CC) $(FLAGS) -c tree.c recVec.o
+tree.o: tree.c tree.h
+	$(CC) $(FLAGS) -c tree.c
 
-hash: linearHash.c linearHash.h pageManager.o recVec.o
-	$(CC) $(FLAGS) -o linearHash.e linearHash.c pageManager.o recVec.o
-
-pmtest: pageManagerTest.c pageManager.o
-	$(CC) $(FLAGS) -o pmtest.e pageManagerTest.c pageManager.o
+linearHash.o: linearHash.c linearHash.h 
+	$(CC) $(FLAGS) -c linearHash.c
 
 treeHelper.o: treeHelper.c treeHelper.h pageManager.o
 	$(CC) $(FLAGS) -c treeHelper.c
