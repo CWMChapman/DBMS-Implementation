@@ -6,6 +6,8 @@
 
 pageptr initTree();
 pageptr initTreeNode();
+void freeTree(pageptr root);
+
 void treeInsert(pageptr* tree, record toAdd);
 record treeSearch(pageptr tree, int id);
 recVec treeRangeSearch(pageptr tree, int min, int max);

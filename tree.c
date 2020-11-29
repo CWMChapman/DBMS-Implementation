@@ -19,6 +19,20 @@ pageptr initTree() {
   return initTreeNode();
 }
 
+void freeTree(pageptr root) {
+  if (root.type == 0) {
+    free(root.ptr.rid);
+    return;
+  }
+  if (root.type == 1) {
+    for (int i = 1; i < TREEPAGE_ITEMS; i += 2) {
+      freeTree(root.ptr.node->children[i].p);
+    }
+    free(root.ptr.node);
+  }
+  return;
+}
+
 void insert(pageptr n, record toAdd, passUp* newChild) {
   // n tree node (i.e. non-leaf)
   if (n.type == 1) { 

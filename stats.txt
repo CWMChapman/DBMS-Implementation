@@ -7,149 +7,149 @@ recordpage 	7 records
 ==========================
 RANDOM RECORDS
 TREE
-nRecords: 10000
-INSERT 		| R: 25793 	W: 12494
-SEARCH 		| R: 40000 	W: 0
+nRecords: 1000
+INSERT 		| R: 1665 	W: 1251
+SEARCH 		| R: 3000 	W: 0
 RANGES
-FIRST 3 	| R: 4 	W: 0
-LAST 3 		| R: 5 	W: 0
-FIRST 10 	| R: 4 	W: 0
-LAST 10 	| R: 5 	W: 0
-FIRST Q 	| R: 120 	W: 0
-SECOND Q 	| R: 131 	W: 0
-LAST Q 		| R: 126 	W: 0
-ALL 		| R: 496 	W: 0
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 16 	W: 0
+SECOND Q 	| R: 16 	W: 0
+LAST Q 		| R: 17 	W: 0
+ALL 		| R: 56 	W: 0
 
 HASH
-nRecords: 10000
-INSERT 		| R: 25441 	W: 27175
-SEARCH 		| R: 10000 	W: 0
+nRecords: 1000
+INSERT 		| R: 2717 	W: 2911
+SEARCH 		| R: 1012 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
-FIRST Q 	| R: 2501 	W: 0
-SECOND Q 	| R: 2501 	W: 0
-LAST Q 		| R: 2500 	W: 0
-ALL 		| R: 10000 	W: 0
+FIRST Q 	| R: 254 	W: 0
+SECOND Q 	| R: 258 	W: 0
+LAST Q 		| R: 251 	W: 0
+ALL 		| R: 1012 	W: 0
 
 ========
 IN ORDER RECORDS
 TREE
-nRecords: 10000
-INSERT 		| R: 27839 	W: 13048
-SEARCH 		| R: 40000 	W: 0
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
 RANGES
-FIRST 3 	| R: 4 	W: 0
-LAST 3 		| R: 5 	W: 0
-FIRST 10 	| R: 4 	W: 0
-LAST 10 	| R: 5 	W: 0
-FIRST Q 	| R: 182 	W: 0
-SECOND Q 	| R: 183 	W: 0
-LAST Q 		| R: 183 	W: 0
-ALL 		| R: 718 	W: 0
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 20 	W: 0
+SECOND Q 	| R: 21 	W: 0
+LAST Q 		| R: 21 	W: 0
+ALL 		| R: 74 	W: 0
 
 HASH
-nRecords: 10000
-INSERT 		| R: 25748 	W: 28265
-SEARCH 		| R: 10000 	W: 0
+nRecords: 1000
+INSERT 		| R: 2860 	W: 3131
+SEARCH 		| R: 1000 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
-FIRST Q 	| R: 2501 	W: 0
-SECOND Q 	| R: 2501 	W: 0
-LAST Q 		| R: 2500 	W: 0
-ALL 		| R: 10000 	W: 0
+FIRST Q 	| R: 251 	W: 0
+SECOND Q 	| R: 251 	W: 0
+LAST Q 		| R: 250 	W: 0
+ALL 		| R: 1000 	W: 0
 
 ========
 REVERSE ORDER RECORDS
 TREE
-nRecords: 10000
-INSERT 		| R: 27839 	W: 13048
-SEARCH 		| R: 40000 	W: 0
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
 RANGES
-FIRST 3 	| R: 4 	W: 0
-LAST 3 		| R: 5 	W: 0
-FIRST 10 	| R: 4 	W: 0
-LAST 10 	| R: 5 	W: 0
-FIRST Q 	| R: 182 	W: 0
-SECOND Q 	| R: 183 	W: 0
-LAST Q 		| R: 183 	W: 0
-ALL 		| R: 718 	W: 0
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 4 	W: 0
+FIRST Q 	| R: 20 	W: 0
+SECOND Q 	| R: 21 	W: 0
+LAST Q 		| R: 21 	W: 0
+ALL 		| R: 74 	W: 0
 
 HASH
-nRecords: 10000
-INSERT 		| R: 25748 	W: 28265
-SEARCH 		| R: 10000 	W: 0
+nRecords: 1000
+INSERT 		| R: 2860 	W: 3131
+SEARCH 		| R: 1000 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
-FIRST Q 	| R: 2501 	W: 0
-SECOND Q 	| R: 2501 	W: 0
-LAST Q 		| R: 2500 	W: 0
-ALL 		| R: 10000 	W: 0
+FIRST Q 	| R: 251 	W: 0
+SECOND Q 	| R: 251 	W: 0
+LAST Q 		| R: 250 	W: 0
+ALL 		| R: 1000 	W: 0
 
 ========
 SKEWED RECORDS
 TREE
-nRecords: 10000
-INSERT 		| R: 27839 	W: 13048
-SEARCH 		| R: 40000 	W: 0
+nRecords: 1000
+INSERT 		| R: 1759 	W: 1295
+SEARCH 		| R: 3000 	W: 0
 RANGES
-FIRST 3 	| R: 4 	W: 0
-LAST 3 		| R: 715 	W: 0
-FIRST 10 	| R: 4 	W: 0
-LAST 10 	| R: 715 	W: 0
-FIRST Q 	| R: 4 	W: 0
-SECOND Q 	| R: 5 	W: 0
-LAST Q 		| R: 716 	W: 0
-ALL 		| R: 718 	W: 0
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 74 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 74 	W: 0
+FIRST Q 	| R: 3 	W: 0
+SECOND Q 	| R: 3 	W: 0
+LAST Q 		| R: 74 	W: 0
+ALL 		| R: 74 	W: 0
 
 HASH
-nRecords: 10000
-INSERT 		| R: 24022 	W: 21554
-SEARCH 		| R: 11034 	W: 0
+nRecords: 1000
+INSERT 		| R: 2542 	W: 2381
+SEARCH 		| R: 1093 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
-FIRST Q 	| R: 2549 	W: 0
-SECOND Q 	| R: 2550 	W: 0
-LAST Q 		| R: 2549 	W: 0
-ALL 		| R: 10194 	W: 0
+FIRST Q 	| R: 257 	W: 0
+SECOND Q 	| R: 257 	W: 0
+LAST Q 		| R: 256 	W: 0
+ALL 		| R: 1024 	W: 0
 
 ========
 RANDOM SKEWED RECORDS
 TREE
-nRecords: 10000
-INSERT 		| R: 25793 	W: 12494
-SEARCH 		| R: 40000 	W: 0
+nRecords: 1000
+INSERT 		| R: 1665 	W: 1251
+SEARCH 		| R: 3000 	W: 0
 RANGES
-FIRST 3 	| R: 4 	W: 0
-LAST 3 		| R: 494 	W: 0
-FIRST 10 	| R: 4 	W: 0
-LAST 10 	| R: 494 	W: 0
-FIRST Q 	| R: 4 	W: 0
-SECOND Q 	| R: 5 	W: 0
-LAST Q 		| R: 494 	W: 0
-ALL 		| R: 496 	W: 0
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 56 	W: 0
+FIRST 10 	| R: 3 	W: 0
+LAST 10 	| R: 56 	W: 0
+FIRST Q 	| R: 3 	W: 0
+SECOND Q 	| R: 3 	W: 0
+LAST Q 		| R: 56 	W: 0
+ALL 		| R: 56 	W: 0
 
 HASH
-nRecords: 10000
-INSERT 		| R: 30325 	W: 27217
-SEARCH 		| R: 11136 	W: 0
+nRecords: 1000
+INSERT 		| R: 3096 	W: 2979
+SEARCH 		| R: 1093 	W: 0
 RANGES
 FIRST 3 	| R: 4 	W: 0
 LAST 3 		| R: 4 	W: 0
 FIRST 10 	| R: 11 	W: 0
 LAST 10 	| R: 11 	W: 0
-FIRST Q 	| R: 2555 	W: 0
-SECOND Q 	| R: 2554 	W: 0
-LAST Q 		| R: 2553 	W: 0
-ALL 		| R: 10214 	W: 0
+FIRST Q 	| R: 257 	W: 0
+SECOND Q 	| R: 257 	W: 0
+LAST Q 		| R: 256 	W: 0
+ALL 		| R: 1024 	W: 0
