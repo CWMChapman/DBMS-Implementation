@@ -66,6 +66,11 @@ record* genSkewedRecords(int nRecords) {
     ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
     x = tau * ((double) i / (double)nRecords);
     jump = (cos(x) + 1) * intensity;
+    // overflow check
+    if (c + (jump == 0 ? 1 : jump) < c) {
+      printf("ERROR: value out of bounds. Try reducing intensity.\n");
+      abort();
+    }
     c += (jump == 0 ? 1 : jump);
   }
   return ret;
@@ -276,6 +281,10 @@ int main(int argc, char** argv) {
   // third, tenth, first quartile end, second q end,
   // third q end, tenth from end, third from end, last
   int keys[8] = {2, 9, nRecords / 4, nRecords / 2, (3 * nRecords) / 4, nRecords - 11, nRecords-4, nRecords - 1};
+
+  printf("%i\n%i\n", genSkewedRecords(nRecords)[nRecords - 1].id, INT_MAX);
+
+  return 0;
   
   initPageManager();
   printSizes();
