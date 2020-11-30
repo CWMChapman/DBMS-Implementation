@@ -28,4 +28,35 @@ Figure [Figure 1](Documents/searchReadsPlot.png) demonstrates the performance of
 
 #### Range Search
 
-Figure [Figure 2](Documents/rangeSearchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs \textbf{overwhelming} better than the hash table for range searches, the performance gap is so wide that it helps to look at the same plot but with a logarithmically scaled x-axis (Figure \ref{fig:rangeSearchLog}). Range search is the worst case for hash-based databases.
+Figure [Figure 2](Documents/rangeSearchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs \textbf{overwhelming} better than the hash table for range searches, the performance gap is so wide that it helps to look at the same plot but with a logarithmically scaled x-axis (Figure \ref{fig:rangeSearchLog}). Range search is the worst case for hash-based databases. 
+
+The expected numbers are fairly similar. We ran these tests using a 512-byte page. This means that one tree page can hold 31 key/pointer unions, or 16 pointers. If we assume 75% occupancy, this means each tree node holds roughly 12 children; the height of the tree should therefore be log12(1,000,000) = 5.5 ≈ 6. We would therefore expect around 6 reads per search, or 6,000,000 reads to search for 1,000,000 items.
+
+The textbook estimates 1.2 reads per search for a hash map. We would therefore expect it to take around 1,200,000 reads to search for 1,000,000 items.
+
+For the range searches, the tree ought to perform basically the same: it should still take 6 I/Os to traverse down to the beginning of the range, but will then require an additional few I/Os to traverse the linked list. One of those pages can hold 29 rids, so again assuming 75% occupancy it should take 6 + n/21.75 page I/Os to retrieve n records (plus one or two pages because we won’t be going cleanly from the beginning of one page to the end of another). We would therefore expect the second quartile range search to take 6 + 250,000/21.75 = 11,500 reads and the full range search to take 6 + 1,000,000/21.75 = 45, 983.
+
+The hash table, on the other hand, does not store any information on record order; therefore, to perform a range search using the table, one must simply check the table for every potential key in the range. The skewed data ranges from 0 to 100,204,720, with the second quartile beginning at 32,797,249 and ending at 50,173,927. Again assuming 1.2 reads per search, this should take 120,245,644 reads to perform the full range search and 20,852,013 reads for the second quartile.
+
+The experimental data (see below) basically confirm these estimates. The tree slightly under- performs them for range searches, while the hash table slightly overperforms them overall. The hash performance is probably due to the evenness of the data: even with a skew applied, it still experiences rel- atively little overflow. In a real-world database with records being added and removed regularly, we would expect worse performance. The tree performance is probably due to lower occupancy than expected. This could be improved by a more aggressive splitting technique that reallocates to existing sibling nodes if possible instead of splitting; however, all of these variances are fairly trivial, and we can see clearly from this data that the expected performance basically aligns with the experimental performance.
+
+![Figure 1](Documents/searchReadsPlot.png)
+![Figure 2](Documents/rangeSearchReadsPlot.png)
+
+
+Linear Hash Table Operation  | Reads         | Writes         | Est. Reads
+---------------------------- | ------------- | -------------  | -------------
+Insert                       | 3,223,374     | 2,857,734      | - 
+Full Key Equality Search     | 1,095,543     | 0              | 1,200,000
+Second Quartile Range Search | 17,703,231    | 0              | 20,852,013 
+Full Range Search            | 102,532,199   | 0              | 120,245,644 
+
+
+Tree Operation               | Reads         | Writes         | Est. Reads
+---------------------------- | ------------- | -------------  | -------------
+Insert                       | 4,361,765     | 1,250,899      | - 
+Full Key Equality Search     | 6,000,000     | 0              | 6,000,000
+Second Quartile Range Search | 12,368        | 0              | 11,500
+Full Range Search            | 49,310        | 0              | 45,983
+
+
