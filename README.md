@@ -20,12 +20,12 @@ The "page" size can then be set at compile time with a pre-processing directive,
  
 ### Results
 
-Our prediction from our project proposal (like the theory suggests) that B+-trees are better at range queries ([Figure 1](Documents/rangeSearchReadsPlot.png)) and hash tables are better optimized for key equality searches ([Figure 2](Documents/searchReadsPlot.png)), was supported by our empirically benchmarked results.
-
-#### Range Search
-
-[Figure 1](DDocuments/rangeSearchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs overwhelming better than the hash table for range searches, the performance gap only widens the larger the range of the search. The tree performs roughly 20 times better than the hash table on average. Range search is the worst case for hash-based databases.
+Our prediction from our project proposal (like the theory suggests) that hash tables are better optimized for key equality searches ([Figure 1](Documents/searchReadsPlot.png)) and that B+-trees are better at range queries ([Figure 2](Documents/rangeSearchReadsPlot.png)), was supported empirically by our benchmarked results.
 
 #### Search
 
-[Figure 2](Documents/searchReadsPlot.png) demonstrates the performance of a key equality searches of the entire data structure for both the the linear hash and tree implementation. The hash table performs overwhelming better than the tree for searches. This, of course, makes sense because in key equality searches the tree cannot benefit from the links between the leaf nodes like it does in range search. The hash table performs roughly 6 times better than the tree on average. Key equality search is the worst case for tree-based databases.
+Figure [Figure 1](Documents/searchReadsPlot.png) demonstrates the performance of a key equality searches of the entire data structure for both the the linear hash and tree implementation. The hash table performs better than the tree for key equality searches. This, of course, makes sense because in key equality searches the tree cannot benefit from the links between the leaf nodes like it does in range search. The hash table performs roughly 4 times better than the tree on average. Key equality search is the worst case for tree-based databases. 
+
+#### Range Search
+
+Figure [Figure 2](Documents/rangeSearchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs \textbf{overwhelming} better than the hash table for range searches, the performance gap is so wide that it helps to look at the same plot but with a logarithmically scaled x-axis (Figure \ref{fig:rangeSearchLog}). Range search is the worst case for hash-based databases.
