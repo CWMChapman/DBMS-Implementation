@@ -71,32 +71,19 @@ record* genSkewedRecords(int nRecords) {
   return ret;
 }
 
-record* genRandomSkewedRecords(int nRecords) {
+void shuffleRecords(record* records, int nRecords) {
   printf("generating random skewed records...\n");
-  record* ret = malloc(nRecords * sizeof(record));
-  float nWaves = 2;
-  int intensity = 100;
-  float tau = 6.2831853 * nWaves;
-  int c = 0;
-  int x, jump;
-  for (int i = 0; i < nRecords; ++i) {
-    ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
-    x = tau * ((double) i / (double)nRecords);
-    jump = (cos(x) + 1) * intensity;
-    c += (jump == 0 ? 1 : jump);
-  }
-
+  
   record tmp;
   int randInt;
   srand(time(NULL));
   for (int i = 0; i < nRecords; ++i) {
-    tmp = ret[i];
+    tmp = records[i];
     randInt = rand() % nRecords;
-    ret[i] = ret[randInt];
-    ret[randInt] = tmp;
+    records[i] = records[randInt];
+    records[randInt] = tmp;
   }
-  
-  return ret;
+  return;
 }
 
 void writeStatsForPlot() {
@@ -231,7 +218,7 @@ void benchmarkHashSearch(record* testArr, int nRecords, FILE* fout) {
 }
 
 
-void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
+void benchmarkTree(record* testArr, int nRecords, int* keys, FILE* fout) {
   pageptr root = initTree();
   fprintf(fout, "nRecords: %i\n", nRecords);
 
@@ -252,33 +239,33 @@ void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
   printf("tree range searching...\n");
 
   clearPageManager();
-  treeRangeSearch(root, -1, 3);
+  treeRangeSearch(root, -1, keys[0]);
   fprintf(fout, "FIRST 3 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
   
   clearPageManager();
-  treeRangeSearch(root, nRecords - 4, -1);
+  treeRangeSearch(root, keys[6], -1);
   fprintf(fout, "LAST 3 \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  treeRangeSearch(root, -1, 10);
+  treeRangeSearch(root, -1, keys[1]);
   fprintf(fout, "FIRST 10 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  treeRangeSearch(root, nRecords - 11, -1);
+  treeRangeSearch(root, keys[5], -1);
   fprintf(fout, "LAST 10 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  treeRangeSearch(root, -1, nRecords / 4);
+  treeRangeSearch(root, -1, keys[2]);
   fprintf(fout, "FIRST Q \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  treeRangeSearch(root, nRecords / 4, nRecords / 2);
+  treeRangeSearch(root, keys[2], keys[3]);
   fprintf(fout, "SECOND Q \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  treeRangeSearch(root, (3 * nRecords) / 4, -1);
+  treeRangeSearch(root, keys[4], -1);
   fprintf(fout, "LAST Q \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
-
+  
   clearPageManager();
   treeRangeSearch(root, -1, -1);
   fprintf(fout, "ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
@@ -287,7 +274,7 @@ void benchmarkTree(record* testArr, int nRecords, FILE* fout) {
   return;
 }
 
-void benchmarkHash(record* testArr, int nRecords, FILE* fout) {
+void benchmarkHash(record* testArr, int nRecords, int* keys, FILE* fout) {
   hashTable* ht = initHashTable();
   fprintf(fout, "nRecords: %i\n", nRecords);
 
@@ -308,48 +295,46 @@ void benchmarkHash(record* testArr, int nRecords, FILE* fout) {
   printf("hash range searching...\n");
 
   clearPageManager();
-  hashRangeSearch(ht, 0, 3);
+  hashRangeSearch(ht, 0, keys[0]);
   fprintf(fout, "FIRST 3 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
   
   clearPageManager();
-  hashRangeSearch(ht, nRecords - 4, nRecords-1);
+  hashRangeSearch(ht, keys[6], keys[7]);
   fprintf(fout, "LAST 3 \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, 0, 10);
+  hashRangeSearch(ht, 0, keys[1]);
   fprintf(fout, "FIRST 10 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, nRecords - 11, nRecords-1);
+  hashRangeSearch(ht, keys[5], keys[7]);
   fprintf(fout, "LAST 10 \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, 0, nRecords / 4);
+  hashRangeSearch(ht, 0, keys[2]);
   fprintf(fout, "FIRST Q \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, nRecords / 4, nRecords / 2);
+  hashRangeSearch(ht, keys[2], keys[3]);
   fprintf(fout, "SECOND Q \t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, (3 * nRecords) / 4, nRecords-1);
+  hashRangeSearch(ht, keys[4], keys[7]);
   fprintf(fout, "LAST Q \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
 
   clearPageManager();
-  hashRangeSearch(ht, 0, nRecords-1);
+  hashRangeSearch(ht, 0, keys[7]);
   fprintf(fout, "ALL \t\t| R: %i \tW: %i\n", pm->reads, pm->writes);
   return;
 }
 
-
-
-
-
-
-
 int main(int argc, char** argv) {
   int nRecords = 150;
   if (argc == 2) nRecords = atoi(argv[1]);
+
+  // third, tenth, first quartile end, second q end,
+  // third q end, tenth from end, third from end, last
+  int keys[8] = {2, 9, nRecords / 4, nRecords / 2, (3 * nRecords) / 4, nRecords - 11, nRecords-4, nRecords - 1};
   
   initPageManager();
   printSizes();
@@ -363,10 +348,10 @@ int main(int argc, char** argv) {
   record* random = genRandomRecords(nRecords);
   
   fputs("TREE\n", fout);
-  benchmarkTree(random, nRecords, fout);
+  benchmarkTree(random, nRecords, keys, fout);
   
   fputs("\nHASH\n", fout);
-  benchmarkHash(random, nRecords, fout);
+  benchmarkHash(random, nRecords, keys, fout);
 
   free(random);
 
@@ -374,10 +359,10 @@ int main(int argc, char** argv) {
   record* inOrder = genInOrderRecords(nRecords);
 
   fputs("TREE\n", fout);
-  benchmarkTree(inOrder, nRecords, fout);
+  benchmarkTree(inOrder, nRecords, keys, fout);
   
   fputs("\nHASH\n", fout);
-  benchmarkHash(inOrder, nRecords, fout);
+  benchmarkHash(inOrder, nRecords, keys, fout);
 
   free(inOrder);
 
@@ -385,34 +370,39 @@ int main(int argc, char** argv) {
   record* reverse = genReverseOrderRecords(nRecords);
 
   fputs("TREE\n", fout);
-  benchmarkTree(reverse, nRecords, fout);
+  benchmarkTree(reverse, nRecords, keys, fout);
   
   fputs("\nHASH\n", fout);
-  benchmarkHash(reverse, nRecords, fout);
+  benchmarkHash(reverse, nRecords, keys, fout);
 
   free(reverse);
 
   fputs("\n========\nSKEWED RECORDS\n", fout);
   record* skew = genSkewedRecords(nRecords);
+  for (int i = 0; i < 8; ++i) keys[i] = skew[keys[i]].id;
+  if (keys[7] >= INT_MAX) {
+    printf("ERROR: max value too large. Try reducing intensity of skew.\n");
+    abort();
+  }
+  // for (int i = 0; i < 8; ++i) printf("%i\n", keys[i]);
 
   fputs("TREE\n", fout);
-  benchmarkTree(skew, nRecords, fout);
+  benchmarkTree(skew, nRecords, keys, fout);
   
   fputs("\nHASH\n", fout);
-  benchmarkHash(skew, nRecords, fout);
-
-  free(skew);
+  benchmarkHash(skew, nRecords, keys, fout);
 
   fputs("\n========\nRANDOM SKEWED RECORDS\n", fout);
-  record* randSkew = genRandomSkewedRecords(nRecords);
+  // record* randSkew = genRandomSkewedRecords(nRecords);
+  shuffleRecords(skew, nRecords);
 
   fputs("TREE\n", fout);
-  benchmarkTree(randSkew, nRecords, fout);
+  benchmarkTree(skew, nRecords, keys, fout);
   
   fputs("\nHASH\n", fout);
-  benchmarkHash(randSkew, nRecords, fout);
+  benchmarkHash(skew, nRecords, keys, fout);
 
-  free(randSkew);
+  free(skew);
   
   fclose(fout);
 
