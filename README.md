@@ -24,8 +24,8 @@ Our prediction from our project proposal (which is supported by theory) that B+-
 
 #### Range Search
 
-[Figure 1](Documents/searchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs overwhelming better than the hash table for range searches, the performance gap only widens the larger the range of the search. The tree performs roughly 20 times better than the hash table on average. Range search is the worst case for hash-based databases.
+[Figure 1](DDocuments/rangeSearchReadsPlot.png) demonstrates the performance of a range query of the entire data structure for both the the linear hash and tree implementation. The tree performs overwhelming better than the hash table for range searches, the performance gap only widens the larger the range of the search. The tree performs roughly 20 times better than the hash table on average. Range search is the worst case for hash-based databases.
 
 #### Search
 
-[Figure 2](Documents/rangeSearchReadsPlot.png) demonstrates the performance of a key equality searches of the entire data structure for both the the linear hash and tree implementation. The hash table performs overwhelming better than the tree for searches. This, of course, makes sense because in key equality searches the tree cannot benefit from the links between the leaf nodes like it does in range search. The hash table performs roughly 6 times better than the tree on average. Key equality search is the worst case for tree-based databases.
+[Figure 2](Documents/searchReadsPlot.png) demonstrates the performance of a key equality searches of the entire data structure for both the the linear hash and tree implementation. The hash table performs overwhelming better than the tree for searches. This, of course, makes sense because in key equality searches the tree cannot benefit from the links between the leaf nodes like it does in range search. The hash table performs roughly 6 times better than the tree on average. Key equality search is the worst case for tree-based databases.
