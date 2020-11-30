@@ -68,7 +68,7 @@ record* genSkewedRecords(int nRecords) {
     jump = (cos(x) + 1) * intensity;
     // overflow check
     if (c + (jump == 0 ? 1 : jump) < c) {
-      printf("ERROR: value out of bounds. Try reducing intensity.\n");
+      printf("ERROR: too many records; will overflow. Try reducing intensity.\n");
       abort();
     }
     c += (jump == 0 ? 1 : jump);
@@ -281,10 +281,6 @@ int main(int argc, char** argv) {
   // third, tenth, first quartile end, second q end,
   // third q end, tenth from end, third from end, last
   int keys[8] = {2, 9, nRecords / 4, nRecords / 2, (3 * nRecords) / 4, nRecords - 11, nRecords-4, nRecords - 1};
-
-  printf("%i\n%i\n", genSkewedRecords(nRecords)[nRecords - 1].id, INT_MAX);
-
-  return 0;
   
   initPageManager();
   printSizes();
@@ -330,11 +326,6 @@ int main(int argc, char** argv) {
   fputs("\n========\nSKEWED RECORDS\n", fout);
   record* skew = genSkewedRecords(nRecords);
   for (int i = 0; i < 8; ++i) keys[i] = skew[keys[i]].id;
-  if (keys[7] >= INT_MAX) {
-    printf("ERROR: max value too large. Try reducing intensity of skew.\n");
-    abort();
-  }
-  // for (int i = 0; i < 8; ++i) printf("%i\n", keys[i]);
 
   fputs("TREE\n", fout);
   benchmarkTree(skew, nRecords, keys, fout);
@@ -343,7 +334,6 @@ int main(int argc, char** argv) {
   benchmarkHash(skew, nRecords, keys, fout);
 
   fputs("\n========\nRANDOM SKEWED RECORDS\n", fout);
-  // record* randSkew = genRandomSkewedRecords(nRecords);
   shuffleRecords(skew, nRecords);
 
   fputs("TREE\n", fout);
