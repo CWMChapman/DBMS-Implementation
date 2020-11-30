@@ -20,7 +20,7 @@ The "page" size can then be set at compile time with a pre-processing directive,
  
 ### Results
 
-Our prediction from our project proposal (which is supported by theory) that B+-trees are better at range queries ([Figure 1](Documents/rangeSearchReadsPlot.png)) and hash tables are better optimized for key equality searches ([Figure 2](Documents/searchReadsPlot.png)), was supported by our empirically benchmarked results.
+Our prediction from our project proposal (like the theory suggests) that B+-trees are better at range queries ([Figure 1](Documents/rangeSearchReadsPlot.png)) and hash tables are better optimized for key equality searches ([Figure 2](Documents/searchReadsPlot.png)), was supported by our empirically benchmarked results.
 
 #### Range Search
 
