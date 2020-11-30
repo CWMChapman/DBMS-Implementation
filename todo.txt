@@ -1,6 +1,0 @@
-High priority
-- actually write the implementations
-
-Low priority
-- page manager buffering--maybe settable buffer size?
-  - should be pretty easy, just need an array of pointers and a replacement schema
