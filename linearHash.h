@@ -14,7 +14,6 @@
 typedef struct {
     int level; // initialized to zero, indicates the current round level and indicates which hash function to use
     int num_buckets;
-    pageptr next; // initially to the first bucket. pointer to the bucket that will next be split
     int next_index; // index of the next pointer in the bucket array
     ridPage* buckets; //[INITIAL_NUM_BUCKETS]; // the actual table
 } hashTable;

@@ -186,10 +186,6 @@ hashTable* initHashTable() {
     pageUnion ptr;
     ptr.rid = &ht->buckets[0];
     ht->next_index = 0;
-    pageptr next; 
-    next.type = 0;
-    next.ptr = ptr;
-    ht->next = next; // setting the next pointer (see linear hash scheme) to be the first bucket
 
     return ht;
 }
