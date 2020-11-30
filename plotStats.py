@@ -37,7 +37,7 @@ plt.ylabel('Number of Reads')
 plt.title('Range Search')
 plt.legend()
 # plt.show()
-plt.savefig("rangeSearchReadsPlot.png", dpi=300)
+plt.savefig("./Documents/rangeSearchReadsPlot.png", dpi=300)
 
 plt.clf()
 
@@ -76,6 +76,6 @@ plt.ylabel('Number of Reads')
 plt.title('Search')
 plt.legend()
 # plt.show()
-plt.savefig("searchReadsPlot.png", dpi=300)
+plt.savefig("./Documents/searchReadsPlot.png", dpi=300)
 
     

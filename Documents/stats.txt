@@ -1,0 +1,155 @@
+==========================
+PAGE SIZES
+pagesize 	512 bytes
+treepage 	31 kps
+ridpage 	29 rids
+recordpage 	7 records
+==========================
+RANDOM RECORDS
+TREE
+nRecords: 150
+INSERT 		| R: 149 	W: 187
+SEARCH 		| R: 300 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 4 	W: 0
+SECOND Q 	| R: 4 	W: 0
+LAST Q 		| R: 5 	W: 0
+ALL 		| R: 11 	W: 0
+
+HASH
+nRecords: 150
+INSERT 		| R: 279 	W: 305
+SEARCH 		| R: 150 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 10 	W: 0
+LAST 10 	| R: 11 	W: 0
+FIRST Q 	| R: 38 	W: 0
+SECOND Q 	| R: 39 	W: 0
+LAST Q 		| R: 38 	W: 0
+ALL 		| R: 150 	W: 0
+
+========
+IN ORDER RECORDS
+TREE
+nRecords: 150
+INSERT 		| R: 149 	W: 189
+SEARCH 		| R: 300 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 4 	W: 0
+SECOND Q 	| R: 5 	W: 0
+LAST Q 		| R: 4 	W: 0
+ALL 		| R: 12 	W: 0
+
+HASH
+nRecords: 150
+INSERT 		| R: 274 	W: 303
+SEARCH 		| R: 150 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 10 	W: 0
+LAST 10 	| R: 11 	W: 0
+FIRST Q 	| R: 38 	W: 0
+SECOND Q 	| R: 39 	W: 0
+LAST Q 		| R: 38 	W: 0
+ALL 		| R: 150 	W: 0
+
+========
+REVERSE ORDER RECORDS
+TREE
+nRecords: 150
+INSERT 		| R: 149 	W: 189
+SEARCH 		| R: 300 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 4 	W: 0
+SECOND Q 	| R: 5 	W: 0
+LAST Q 		| R: 4 	W: 0
+ALL 		| R: 12 	W: 0
+
+HASH
+nRecords: 150
+INSERT 		| R: 274 	W: 303
+SEARCH 		| R: 150 	W: 0
+RANGES
+FIRST 3 	| R: 3 	W: 0
+LAST 3 		| R: 4 	W: 0
+FIRST 10 	| R: 10 	W: 0
+LAST 10 	| R: 11 	W: 0
+FIRST Q 	| R: 38 	W: 0
+SECOND Q 	| R: 39 	W: 0
+LAST Q 		| R: 38 	W: 0
+ALL 		| R: 150 	W: 0
+
+========
+SKEWED RECORDS
+TREE
+nRecords: 150
+INSERT 		| R: 149 	W: 189
+SEARCH 		| R: 300 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 4 	W: 0
+SECOND Q 	| R: 5 	W: 0
+LAST Q 		| R: 4 	W: 0
+ALL 		| R: 12 	W: 0
+
+HASH
+nRecords: 150
+INSERT 		| R: 439 	W: 443
+SEARCH 		| R: 150 	W: 0
+RANGES
+FIRST 3 	| R: 401 	W: 0
+LAST 3 		| R: 553 	W: 0
+FIRST 10 	| R: 1801 	W: 0
+LAST 10 	| R: 1421 	W: 0
+FIRST Q 	| R: 4946 	W: 0
+SECOND Q 	| R: 2544 	W: 0
+LAST Q 		| R: 2377 	W: 0
+ALL 		| R: 14781 	W: 0
+
+========
+RANDOM SKEWED RECORDS
+TREE
+nRecords: 150
+INSERT 		| R: 149 	W: 187
+SEARCH 		| R: 300 	W: 0
+RANGES
+FIRST 3 	| R: 2 	W: 0
+LAST 3 		| R: 3 	W: 0
+FIRST 10 	| R: 2 	W: 0
+LAST 10 	| R: 3 	W: 0
+FIRST Q 	| R: 4 	W: 0
+SECOND Q 	| R: 4 	W: 0
+LAST Q 		| R: 5 	W: 0
+ALL 		| R: 11 	W: 0
+
+HASH
+nRecords: 150
+INSERT 		| R: 379 	W: 375
+SEARCH 		| R: 150 	W: 0
+RANGES
+FIRST 3 	| R: 401 	W: 0
+LAST 3 		| R: 553 	W: 0
+FIRST 10 	| R: 1801 	W: 0
+LAST 10 	| R: 1421 	W: 0
+FIRST Q 	| R: 4946 	W: 0
+SECOND Q 	| R: 2544 	W: 0
+LAST Q 		| R: 2377 	W: 0
+ALL 		| R: 14781 	W: 0
