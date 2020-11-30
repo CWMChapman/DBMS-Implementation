@@ -40,9 +40,6 @@ The hash table, on the other hand, does not store any information on record orde
 
 The experimental data (see below) basically confirm these estimates. The tree slightly under- performs them for range searches, while the hash table slightly overperforms them overall. The hash performance is probably due to the evenness of the data: even with a skew applied, it still experiences rel- atively little overflow. In a real-world database with records being added and removed regularly, we would expect worse performance. The tree performance is probably due to lower occupancy than expected. This could be improved by a more aggressive splitting technique that reallocates to existing sibling nodes if possible instead of splitting; however, all of these variances are fairly trivial, and we can see clearly from this data that the expected performance basically aligns with the experimental performance.
 
-![Figure 1](Documents/searchReadsPlot.png)
-![Figure 2](Documents/rangeSearchReadsPlot.png)
-
 
 Linear Hash Table Operation  | Reads         | Writes         | Est. Reads
 ---------------------------- | ------------- | -------------  | -------------
@@ -59,4 +56,7 @@ Full Key Equality Search     | 6,000,000     | 0              | 6,000,000
 Second Quartile Range Search | 12,368        | 0              | 11,500
 Full Range Search            | 49,310        | 0              | 45,983
 
+
+![Figure 1](Documents/searchReadsPlot.png)
+![Figure 2](Documents/rangeSearchReadsPerRecordLogPlot.png)
 
