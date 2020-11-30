@@ -66,6 +66,11 @@ record* genSkewedRecords(int nRecords) {
     ret[i] = (record) { .id = c, .f1 = "Gregory", .f2 = "Alice" };
     x = tau * ((double) i / (double)nRecords);
     jump = (cos(x) + 1) * intensity;
+    // overflow check
+    if (c + (jump == 0 ? 1 : jump) < c) {
+      printf("ERROR: too many records; will overflow. Try reducing intensity.\n");
+      abort();
+    }
     c += (jump == 0 ? 1 : jump);
   }
   return ret;
@@ -408,11 +413,6 @@ int main(int argc, char** argv) {
   fputs("\n========\nSKEWED RECORDS\n", fout);
   record* skew = genSkewedRecords(nRecords);
   for (int i = 0; i < 8; ++i) keys[i] = skew[keys[i]].id;
-  if (keys[7] >= INT_MAX) {
-    printf("ERROR: max value too large. Try reducing intensity of skew.\n");
-    abort();
-  }
-  // for (int i = 0; i < 8; ++i) printf("%i\n", keys[i]);
 
   fputs("TREE\n", fout);
   benchmarkTree(skew, nRecords, keys, fout);
@@ -421,7 +421,6 @@ int main(int argc, char** argv) {
   benchmarkHash(skew, nRecords, keys, fout);
 
   fputs("\n========\nRANDOM SKEWED RECORDS\n", fout);
-  // record* randSkew = genRandomSkewedRecords(nRecords);
   shuffleRecords(skew, nRecords);
 
   fputs("TREE\n", fout);
