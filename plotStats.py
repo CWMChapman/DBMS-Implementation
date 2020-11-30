@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 
 
-with open('plotRangeSearchStats.txt') as f:
+with open('./Documents/plotRangeSearchStats.txt') as f:
     l = f.readline()
     while ("TREE" not in l):
         l = f.readline()
@@ -33,7 +33,7 @@ plt.xlim(left=0)
 plt.ylim(top=1E6)
 plt.ylim(bottom=0)
 plt.xlabel('Number of Records')
-plt.ylabel('Number of Reads')
+plt.ylabel('Number of Page Reads')
 plt.title('Range Search')
 plt.legend()
 # plt.show()
@@ -41,7 +41,23 @@ plt.savefig("./Documents/rangeSearchReadsPlot.png", dpi=300)
 
 plt.clf()
 
-with open('plotSearchStats.txt') as f:
+plt.plot(x_tree, y_tree, label="Tree")
+plt.plot(x_hash, y_hash, label="Hash")
+# plt.yscale("log")
+plt.xscale("log")
+plt.xlim(right=1E6)
+plt.ylim(bottom=0)
+plt.ylim(top=1E6)
+plt.xlabel('Number of Records (log scale)')
+plt.ylabel('Number of Page Reads')
+plt.title('Range Search')
+plt.legend()
+# plt.show()
+plt.savefig("./Documents/rangeSearchReadsLogPlot.png", dpi=300)
+
+plt.clf()
+
+with open('./Documents/plotSearchStats.txt') as f:
     l = f.readline()
     while ("TREE" not in l):
         l = f.readline()
@@ -72,7 +88,7 @@ plt.xlim(left=0)
 plt.ylim(top=1E6) 
 plt.ylim(bottom=0) #
 plt.xlabel('Number of Records')
-plt.ylabel('Number of Reads')
+plt.ylabel('Number of Page Reads')
 plt.title('Search')
 plt.legend()
 # plt.show()
