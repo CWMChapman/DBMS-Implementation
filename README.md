@@ -9,7 +9,11 @@ $ make
 ```zsh
 $ ./benchmark.e <number of records to insert into data structures -- defaults to 150>
 ```
-### Goal / Approach
+
+#### Repository Organization
+All code is in the top level directory. Reports and presentation slides as well as statistics/data printouts and plots are in the Documents directory.
+
+## Goal / Approach
 For the CPS377 Final Project we developed a C implementation of a Linear Hash Table and a B+-Tree to compare their benefits and downsides. We expected to demonstrate that B+-trees are better at range queries and hash tables are better optimized for key equality searches.
 
 ### Page Simulation Design
@@ -18,7 +22,7 @@ Directly collecting data on page hits was infeasible for a number of reasons, pr
 
 The "page" size can then be set at compile time with a pre-processing directive, with the sizes of the individual types of pages calculated based on the sizes of their component structs; so a tree node, composed of a 64-bit int and an array of key/pointer unions contains as many of those unions as fit in the page size, rounded down to an odd number.  This arithmetic was the source of a number of very difficult errors to chase down, as it relies on certain assumptions about the sizes of various structs that may be invalidated based on how the C compiler packs members into a struct; this caused a number of memory errors, and so led to the implementation of a `checkSizes` function that compares the expected values against the actual at the initalization of the page manager and terminates the program if the values disagree.
  
-### Results
+## Results
 
 Our prediction from our project proposal (like the theory suggests) that hash tables are better optimized for key equality searches ([Figure 1](Documents/searchReadsPlot.png)) and that B+-trees are better at range queries ([Figure 2](Documents/rangeSearchReadsPlot.png)), was supported empirically by our benchmarked results.
 
